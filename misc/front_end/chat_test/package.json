@@ -1,0 +1,23 @@
+{
+  "dependencies": {
+    "expo": "~40.0.0",
+    "react": "16.13.1",
+    "react-dom": "16.13.1",
+    "react-native": "https://github.com/expo/react-native/archive/sdk-40.0.1.tar.gz",
+    "react-native-autogrow-input": "^0.2.1",
+    "react-native-keyboard-spacer": "^0.4.1",
+    "react-native-paper": "^4.7.2",
+    "react-native-web": "^0.15.7"
+  },
+  "devDependencies": {
+    "@babel/core": "~7.9.0"
+  },
+  "scripts": {
+    "start": "expo start",
+    "android": "expo start --android",
+    "ios": "expo start --ios",
+    "web": "expo start --web",
+    "eject": "expo eject"
+  },
+  "private": true
+}
