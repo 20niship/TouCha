@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <title>TouCha 試作1</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width" >
+    <link rel="stylesheet" href="stylesheet.css">
+    <script type="text/javascript" src="/socket.io/socket.io.js"></script>
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+  </head>
+  <body>
+    <div class="title">
+    <img src="bannerr-min.png">
+    <h1>試作1</h1>
+    </div>
+    <form>
+        <div class="form">
+          <label for="msgForm">メッセージ：</label>
+          <input type="text" id="msgForm">
+        </div>
+        <button type="submit">送信(またはEnterキー)</button>
+    </form>
+    <div id="chatLogs"></div>
+    <script type="text/javascript">
+      var socket = io.connect();
+      socket.on("server_to_client", function(data){
+      appendMsg(data.value);
+    });
+    function appendMsg(text) {
+      $("#chatLogs").append("<div>" + text + "</div>");
+    }
+    $("form").submit(function(ev){
+    var message = $("#msgForm").val();
+    $("#msgForm").val('');
+    socket.emit("client_to_server", {value : message});
+    ev.preventDefault();
+});
+    </script>
+  </body>
+</html>
