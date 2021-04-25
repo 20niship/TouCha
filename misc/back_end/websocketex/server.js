@@ -1,20 +1,24 @@
-let ws = require('ws')
-var server = new ws.Server({port:5001});
+var express = require('express');
+var app = express();
+var http = require('http').Server(app);
+const io = require('socket.io')(http);
 
-// 接続時に呼ばれる
-server.on('connection', ws => {
-    // クライアントからのデータ受信時に呼ばれる
-    ws.on('message', message => {
-        console.log(message);
 
-        // クライアントにデータを返信
-        server.clients.forEach(client => {
-            client.send(message);
-        });
+io.on('connection',function(socket){
+
+    socket.on('message',function(msg){
+
+        console.log('message: ' + msg);
+
+        //全員に配信する
+        io.emit('message', msg);
+
+        //特定のIDに配信（ここでは送ってきたIDに返信）
+        io.to(socket.id).emit('personal', 'PERSONAL');
+        console.log('id: ' + socket.id)
     });
+});
 
-    // 切断時に呼ばれる
-    ws.on('close', () => {
-        console.log('close');
-    });
+http.listen(3000, function () {
+    console.log('server start @3000 port');
 });
