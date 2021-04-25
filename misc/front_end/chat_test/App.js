@@ -4,10 +4,10 @@ import AutogrowInput from 'react-native-autogrow-input';
 
 
 // 一時的に画像を読み込む（テスト用のみ）
-import photo_nerv from './images/nerv.jpg'
-import photo_qb   from './images/qb.jpg'
-import photo_shunji from './images/shinji.jpg'
-
+import photo_nerv from '.images/nerv.jpg'
+import photo_qb   from '.images/qb.jpg'
+import photo_shunji from '.images/shinji.jpg'
+import photo_bell from ".images/bell.png"
 
 //used to make random-sized messages
 function getRandomInt(min, max) {
@@ -28,6 +28,7 @@ export default class ChatView extends Component {
     ];
 
     this.state = {
+      bell:photo_bell,
       messages: messages,
       inputBarText: ''
     }
@@ -52,7 +53,7 @@ export default class ChatView extends Component {
 
   _sendMessage() {
     this.state.messages.push({ direction:'right', usrIconURL:photo_qb,  text: this.state.inputBarText, reactions:"" })
-
+    
     this.setState({
       messages: this.state.messages,
       inputBarText: ''
@@ -85,17 +86,23 @@ export default class ChatView extends Component {
     });
 
     return (
-              <View style={styles.outer}>
-                  <ScrollView ref={(ref) => { this.scrollView = ref }} style={styles.messages}>
-                    {messages}
-                  </ScrollView>
-                  <InputBar onSendPressed={() => this._sendMessage()} 
-                            onSizeChange={() => this._onInputSizeChange()}
-                            onChangeText={(text) => this._onChangeInputBarText(text)}
-                            text={this.state.inputBarText}/>
-                  {/* <KeyboardSpacer/>              */}
-              </View>
-            );
+
+      <View style={styles.outer}>
+          <View style={styles.topBar}>
+            <Text style={styles.backButton}>&lt;</Text>
+            <Text style={styles.textTop}>TouChaグル</Text>
+            <Image source={this.state.bell} style={styles.bell}/>
+          </View>
+          <ScrollView ref={(ref) => { this.scrollView = ref }} style={styles.messages}>
+            {messages}
+          </ScrollView>
+          <InputBar onSendPressed={() => this._sendMessage()} 
+                    onSizeChange={() => this._onInputSizeChange()}
+                    onChangeText={(text) => this._onChangeInputBarText(text)}
+                    text={this.state.inputBarText}/>
+          {/* <KeyboardSpacer/>              */}
+      </View>
+    );
   }
 }
 
@@ -166,8 +173,33 @@ class InputBar extends Component {
 //TODO: separate these out. This is what happens when you're in a hurry!
 const styles = StyleSheet.create({
 
-  //ChatView
+  //Top of Chat
+  topBar:{
+    marginTop:40,
+    
+    flexDirection: 'row',
+    justifyContent:"space-between",
+    alignItems:"center",
+  },
 
+  backButton:{
+    marginLeft:10,
+    fontSize:30,
+    margin:4,
+  },
+
+  textTop:{
+    fontSize:20,
+  },
+
+  bell:{
+    marginRight:20,
+    width:25,
+    height:25,
+  },
+
+  //ChatView
+  
   outer: {
     flex: 1,
     flexDirection: 'column',
@@ -179,13 +211,14 @@ const styles = StyleSheet.create({
     flex: 1
   },
 
-  //InputBar
+  //InputBar of Chat
 
   inputBar: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     paddingHorizontal: 5,
-    paddingVertical: 3,
+    paddingTop:5,
+    paddingBottom:40,
   },
 
   textBox: {
@@ -198,6 +231,7 @@ const styles = StyleSheet.create({
   },
 
   sendButton: {
+    width:40,
     justifyContent: 'center',
     alignItems: 'center',
     paddingLeft: 15,
@@ -247,4 +281,3 @@ const styles = StyleSheet.create({
     color: 'white'
   },
 })
-
