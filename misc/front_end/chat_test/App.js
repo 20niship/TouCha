@@ -1,14 +1,12 @@
 import React, { Component } from 'react';
 import { Text, View, Image, StyleSheet, ScrollView, KeyboardAvoidingView, TextInput, TouchableHighlight, Keyboard } from 'react-native';
 import AutogrowInput from 'react-native-autogrow-input';
-
+import MediaQuery from "react-responsive";
 
 // 一時的に画像を読み込む（テスト用のみ）
-import photo_nerv from '.images/nerv.jpg'
-import photo_qb   from '.images/qb.jpg'
-import photo_shunji from '.images/shinji.jpg'
-import photo_bell from ".images/bell.png"
-
+import photo_nerv from './images/nerv.jpg'
+import photo_qb   from './images/qb.jpg'
+import photo_shunji from './images/shinji.jpg'
 //used to make random-sized messages
 function getRandomInt(min, max) {
     return Math.floor(Math.random() * (max - min + 1)) + min;
@@ -26,9 +24,10 @@ export default class ChatView extends Component {
       { direction:'right', usrIconURL:photo_shunji, text:"逃げちゃだめだ、逃げちゃだめだ、逃げちゃだめだ、逃げちゃだめだ、逃げちゃだめだ！！！！", reactions:"" },
       { direction:'left', usrIconURL:photo_shunji, text:"リアクションサンプル：", reactions:"" }
     ];
-
     this.state = {
-      bell:photo_bell,
+      noti:6,
+      roomName:"TouChaグル",
+      member:7,
       messages: messages,
       inputBarText: ''
     }
@@ -78,7 +77,6 @@ export default class ChatView extends Component {
 
   render() {
     var messages = [];
-
     this.state.messages.forEach(function(message, index) {
       messages.push(
           <MessageBubble key={index} direction={message.direction} text={message.text} userIconUrl={message.usrIconURL} reactions={message.reactions}/>
@@ -87,21 +85,34 @@ export default class ChatView extends Component {
 
     return (
 
-      <View style={styles.outer}>
-          <View style={styles.topBar}>
-            <Text style={styles.backButton}>&lt;</Text>
-            <Text style={styles.textTop}>TouChaグル</Text>
-            <Image source={this.state.bell} style={styles.bell}/>
+        //<KeyboardAvoidingView style={{ flex: 1 }} behavior="padding">
+          <View style={styles.outer}>
+            <View style={styles.topBar}>
+              <TouchableHighlight>
+                <Text style={styles.backButton}>&lt; {this.state.noti}</Text>
+              </TouchableHighlight>
+              <Text style={styles.textTop}>{this.state.roomName}({this.state.member})</Text>
+              <TouchableHighlight>
+              <Image source={require("./images/bell.png")} style={styles.bell}/>
+              </TouchableHighlight>
+            </View>
+            <KeyboardAvoidingView
+              style={{ flex: 1 }}
+              behavior="position"
+              contentContainerStyle={{ flex: 1 }}
+            >
+            
+            <ScrollView ref={(ref) => { this.scrollView = ref }} style={styles.messages}>
+              {messages}
+            </ScrollView>
+            <InputBar onSendPressed={() => this._sendMessage()} 
+                      onSizeChange={() => this._onInputSizeChange()}
+                      onChangeText={(text) => this._onChangeInputBarText(text)}
+                      text={this.state.inputBarText}/>
+            {/* <KeyboardSpacer/>              */}
+            </KeyboardAvoidingView>
+            <View style={styles.bottom}></View>
           </View>
-          <ScrollView ref={(ref) => { this.scrollView = ref }} style={styles.messages}>
-            {messages}
-          </ScrollView>
-          <InputBar onSendPressed={() => this._sendMessage()} 
-                    onSizeChange={() => this._onInputSizeChange()}
-                    onChangeText={(text) => this._onChangeInputBarText(text)}
-                    text={this.state.inputBarText}/>
-          {/* <KeyboardSpacer/>              */}
-      </View>
     );
   }
 }
@@ -154,7 +165,11 @@ class InputBar extends Component {
 
   render() {
     return (
+      <>
           <View style={styles.inputBar}>
+            <TouchableHighlight>
+              <Image source={require("./images/plus.png")} style={styles.plus}/>
+            </TouchableHighlight>
             <AutogrowInput style={styles.textBox}
                         ref={(ref) => { this.autogrowInput = ref }} 
                         multiline={true}
@@ -163,10 +178,12 @@ class InputBar extends Component {
                         onContentSizeChange={this.props.onSizeChange}
                         value={this.props.text}/>
             <TouchableHighlight style={styles.sendButton} onPress={() => this.props.onSendPressed()}>
-                <Text style={{color: 'white'}}>Send</Text>
+              <Image source={require("./images/submit_arrow.png")} style={styles.arrow}/>
             </TouchableHighlight>
-          </View> 
-          );
+          </View>
+          
+      </> 
+    );
   }
 }
 
@@ -175,8 +192,10 @@ const styles = StyleSheet.create({
 
   //Top of Chat
   topBar:{
-    marginTop:40,
-    
+    marginTop:0,
+    paddingTop:40,
+    zIndex:1,
+    backgroundColor:"rgba(256,256,256,0.95)",
     flexDirection: 'row',
     justifyContent:"space-between",
     alignItems:"center",
@@ -184,7 +203,7 @@ const styles = StyleSheet.create({
 
   backButton:{
     marginLeft:10,
-    fontSize:30,
+    fontSize:23,
     margin:4,
   },
 
@@ -208,7 +227,7 @@ const styles = StyleSheet.create({
   },
 
   messages: {
-    flex: 1
+    flex: 1,
   },
 
   //InputBar of Chat
@@ -218,7 +237,19 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     paddingHorizontal: 5,
     paddingTop:5,
-    paddingBottom:40,
+    paddingBottom:5,
+    //backgroundColor:"blue",
+  },
+  plus:{
+    height:20,
+    width:20,
+    marginLeft:10,
+    marginRight:10,
+    marginTop:5,
+  },
+
+  arrow:{
+    height:25,
   },
 
   textBox: {
@@ -227,7 +258,8 @@ const styles = StyleSheet.create({
     borderColor: 'gray',
     flex: 1,
     fontSize: 16,
-    paddingHorizontal: 10
+    paddingHorizontal: 10,
+    height:20,
   },
 
   sendButton: {
@@ -238,9 +270,12 @@ const styles = StyleSheet.create({
     marginLeft: 5,
     paddingRight: 15,
     borderRadius: 5,
-    backgroundColor: '#66db30'
+    backgroundColor: 'white',
   },
 
+  bottom:{
+    height:40,
+  },
   //MessageBubble
 
   messageBubble: {
@@ -248,7 +283,7 @@ const styles = StyleSheet.create({
       paddingHorizontal: 10,
       paddingVertical: 5,
       flexDirection:'row',
-      flex: 1
+      flex: 1,
   },
 
 
@@ -270,7 +305,8 @@ const styles = StyleSheet.create({
   },
 
   messageBubbleTextLeft: {
-    color: 'black'
+    color: 'black',
+    fontSize:16,
   },
 
   messageBubbleRight: {
@@ -278,6 +314,7 @@ const styles = StyleSheet.create({
   },
 
   messageBubbleTextRight: {
-    color: 'white'
+    color: 'white',
+    fontSize:16,
   },
 })
