@@ -28,7 +28,6 @@ export default class ChatView extends Component {
       { direction:'right', usrIconURL:photo_shunji, text:"逃げちゃだめだ、逃げちゃだめだ、逃げちゃだめだ、逃げちゃだめだ、逃げちゃだめだ！！！！", reactions:"" },
       { direction:'left', usrIconURL:photo_shunji, text:"リアクションサンプル：", reactions:"" }
     ];
-
     this.state = {
       //bell:photo_bell,
       noti:6,
