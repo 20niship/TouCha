@@ -1,0 +1,22 @@
+//ログイン時　アプリ→サーバー
+    {
+        "protocol":"login",//ここをmessageとかregistarにしてサーバーの応答を変えていこうかと
+        "data":{
+            "id":"user_id",//ユーザーのid
+            "hashedPassword":"xxxxxxxx"//パスワードをアプリ側でハッシュしたもの
+        }
+    }
+//ログイン時　サーバー→アプリ
+    //ログイン成功
+        {
+            "result":"succeed"
+        }
+    //パスワードまたはIDの誤り
+        {
+            "result":"faild"
+        }
+    //パスワードとIDは正しいがメールの確認がされていない
+        {
+            "result":"unvarified"
+        }
+
