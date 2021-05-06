@@ -1,12 +1,16 @@
 import React, { Component } from 'react';
 import { Text, View, Image, StyleSheet, ScrollView, KeyboardAvoidingView, TextInput, TouchableHighlight, Keyboard } from 'react-native';
 import AutogrowInput from 'react-native-autogrow-input';
-import MediaQuery from "react-responsive";
+import io from "socket.io-client";
+
+const socket = io('https://acbc591940e9.ngrok.io', {transports: ['websocket']} );
 
 // 一時的に画像を読み込む（テスト用のみ）
 import photo_nerv from './images/nerv.jpg'
 import photo_qb   from './images/qb.jpg'
 import photo_shunji from './images/shinji.jpg'
+// import photo_bell from "./images/bell.png"
+
 //used to make random-sized messages
 function getRandomInt(min, max) {
     return Math.floor(Math.random() * (max - min + 1)) + min;
@@ -25,6 +29,7 @@ export default class ChatView extends Component {
       { direction:'left', usrIconURL:photo_shunji, text:"リアクションサンプル：", reactions:"" }
     ];
     this.state = {
+      //bell:photo_bell,
       noti:6,
       roomName:"TouChaグル",
       member:7,
@@ -38,7 +43,7 @@ export default class ChatView extends Component {
   };
 
   RoomScrolltoEndWrapper (e) {this.scrollView.scrollToEnd();}
-  componentWillMount () {
+  UNSAFE_componentWillMount () {
     // ンポーネントがマウント(配置)される直前に呼び出される
     this.keyboardDidShowListener = Keyboard.addListener('keyboardDidShow', this.RoomScrolltoEndWrapper.bind(this));
     this.keyboardDidHideListener = Keyboard.addListener('keyboardDidHide', this.RoomScrolltoEndWrapper.bind(this));
@@ -46,13 +51,14 @@ export default class ChatView extends Component {
 
   componentWillUnmount() { this.keyboardDidShowListener.remove(); this.keyboardDidHideListener.remove();}
    
-  componentDidMount()   {setTimeout(function() {this.RoomScrolltoEndWrapper(this);}.bind(this)) } // アプリ起動時に最下部までスクロール
-  componentDidUpdate() { setTimeout(function() {this.RoomScrolltoEndWrapper(this);}.bind(this))  } //メッセージが追加されたときに最下部までスクロール
-  
+  componentDidMount()   {setTimeout(function() {this.RoomScrolltoEndWrapper(this);}.bind(this)); } // アプリ起動時に最下部までスクロール
+  componentDidUpdate() { setTimeout(function() {this.RoomScrolltoEndWrapper(this);}.bind(this));  } //メッセージが追加されたときに最下部までスクロール
 
   _sendMessage() {
-    this.state.messages.push({ direction:'right', usrIconURL:photo_qb,  text: this.state.inputBarText, reactions:"" })
-    
+    this.state.messages.push({ direction:'right', usrIconURL:photo_qb,  text: this.state.inputBarText, reactions:"" });
+
+//    socket.emit('message', this.state.inputBarText);
+
     this.setState({
       messages: this.state.messages,
       inputBarText: ''
@@ -77,6 +83,29 @@ export default class ChatView extends Component {
 
   render() {
     var messages = [];
+    var that = this;
+
+    socket.on('message', function(msg) {
+
+      console.log("ahaha" + msg);
+      const findresult = that.state.messages.some((u) => u.text === msg);
+      if (!findresult) {
+        that.state.messages.push({ direction:'left', usrIconURL:photo_qb,  text:msg, reactions:"" });
+        that.setState({
+        messages: that.state.messages,
+        inputBarText: ''
+        });
+      }
+      console.log("gehe");
+
+    });
+
+    /* if(flag === 1){
+      flag = 0;
+      this.state.messages.push({ direction:'left', usrIconURL:photo_qb,  text:m, reactions:"" });
+      console.log("gehe");
+    } */
+
     this.state.messages.forEach(function(message, index) {
       messages.push(
           <MessageBubble key={index} direction={message.direction} text={message.text} userIconUrl={message.usrIconURL} reactions={message.reactions}/>
@@ -85,34 +114,33 @@ export default class ChatView extends Component {
 
     return (
 
-        //<KeyboardAvoidingView style={{ flex: 1 }} behavior="padding">
-          <View style={styles.outer}>
-            <View style={styles.topBar}>
-              <TouchableHighlight>
+      <View style={styles.outer}>
+          <View style={styles.topBar}>
+          <TouchableHighlight>
                 <Text style={styles.backButton}>&lt; {this.state.noti}</Text>
               </TouchableHighlight>
               <Text style={styles.textTop}>{this.state.roomName}({this.state.member})</Text>
               <TouchableHighlight>
               <Image source={require("./images/bell.png")} style={styles.bell}/>
               </TouchableHighlight>
-            </View>
-            <KeyboardAvoidingView
+          </View>
+          <KeyboardAvoidingView
               style={{ flex: 1 }}
               behavior="position"
               contentContainerStyle={{ flex: 1 }}
             >
-            
-            <ScrollView ref={(ref) => { this.scrollView = ref }} style={styles.messages}>
-              {messages}
-            </ScrollView>
-            <InputBar onSendPressed={() => this._sendMessage()} 
-                      onSizeChange={() => this._onInputSizeChange()}
-                      onChangeText={(text) => this._onChangeInputBarText(text)}
-                      text={this.state.inputBarText}/>
-            {/* <KeyboardSpacer/>              */}
-            </KeyboardAvoidingView>
-            <View style={styles.bottom}></View>
-          </View>
+
+          <ScrollView ref={(ref) => { this.scrollView = ref }} style={styles.messages}>
+            {messages}
+          </ScrollView>
+          <InputBar onSendPressed={() => this._sendMessage()} 
+                    onSizeChange={() => this._onInputSizeChange()}
+                    onChangeText={(text) => this._onChangeInputBarText(text)}
+                    text={this.state.inputBarText}/>
+          {/* <KeyboardSpacer/>              */}
+          </KeyboardAvoidingView>
+          <View style={styles.bottom}></View>
+      </View>
     );
   }
 }
@@ -157,7 +185,7 @@ class InputBar extends Component {
   //Another possible solution here would be if InputBar kept the text as state and only reported it when the Send button
   //was pressed. Then, resetInputText() could be called when the Send button is pressed. However, this limits the ability
   //of the InputBar's text to be set from the outside.
-  componentWillReceiveProps(nextProps) {
+  UNSAFE_componentWillReceiveProps(nextProps) {
     if(nextProps.text === '') {
       this.autogrowInput.resetInputText();
     }
@@ -177,13 +205,18 @@ class InputBar extends Component {
                         onChangeText={(text) => this.props.onChangeText(text)}
                         onContentSizeChange={this.props.onSizeChange}
                         value={this.props.text}/>
-            <TouchableHighlight style={styles.sendButton} onPress={() => this.props.onSendPressed()}>
-              <Image source={require("./images/submit_arrow.png")} style={styles.arrow}/>
+            <TouchableHighlight style={styles.sendButton} onPress={() =>
+            {     
+              socket.emit('message', this.props.text);
+              this.props.onSendPressed();
+            }
+            }>
+                <Image source={require("./images/submit_arrow.png")} style={styles.arrow}/>
             </TouchableHighlight>
-          </View>
-          
-      </> 
-    );
+          </View> 
+
+          </>
+          );
   }
 }
 
