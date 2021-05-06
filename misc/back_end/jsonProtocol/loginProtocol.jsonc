@@ -9,7 +9,7 @@
 //ログイン時　サーバー→アプリ
     //ログイン成功
         {
-            "result":"succeed"
+            "result":"succeeded"
         }
     //パスワードまたはIDの誤り
         {
@@ -17,6 +17,6 @@
         }
     //パスワードとIDは正しいがメールの確認がされていない
         {
-            "result":"unvarified"
+            "result":"unverified"
         }
 
