@@ -5,25 +5,34 @@ const { userInfo } = require('os');
 const {Server} = require('socket.io');
 const io = new Server(3000);
 
-var sockets = {}
+var chat_socket_list = [] // 現在Verifyされているチャットルーム用のソケットのリスト
+var notification_socket_list = [] // 通知を送るために接続されているソケットのリスト
 
 io.on('connection',function(socket){
-    console.log('connected!')
-    var socketId = socket.id;
+    console.log('connected!');
+    // var socketId = socket.id;
+    //chat_socket_listにIDをKeyにして情報を入れる
+    chat_socket_list.push(
+        {
+            socket_obj: socket,
+            logined : false,
+            user : "",
+            pass : "" //　必要？
+        }
+    );
+    // ソケット接続語、ログイン（ユーザー認証）を行う
+    socket.on('login', function(msg){
+        console.log(msg);
+        var message = JSON.parse(msg);
 
-    //socketsにIDをKeyにして情報を入れる
-    sockets.id = {
-        socket : socket,
-        logined : false
-    };
+    });
 
     socket.on('message',function(msg){
-        //送られたJsonを変数にする
-        message = JSON.parse(msg);
+        console.log(msg);
+        var aaaaaaaaa = JSON.parse(msg);
         console.log("get new message!");
-        console.log(message);
+        console.log(aaaaaaaaa);
         console.log("-----------------------------------------------");
-
 
         //msg.protocolの内容で処理を分岐
         /*
@@ -35,7 +44,7 @@ io.on('connection',function(socket){
                 result = login(data);
                 if (result.result == "succeeded"){
                     //ログイン出来たらフラグをtrueにする
-                    sockets.id.logined = true
+                    chat_socket_list.id.logined = true
                 }else if(result.result == "unverified"){
                     //なんかメール送る処理
 

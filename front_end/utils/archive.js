@@ -8,17 +8,16 @@ export default  class Open_room extends React.Component{
   render(){
     const { navigation } = this.props;
   const room_temp = [
-      {name:"room1", icon_name:"user-circle", lastmsg:"Hello room 1", status:"ok"},
-      {name:"room2", icon_name:"user-circle", lastmsg:"Hello room 2", status:"ok"},
-      {name:"room3", icon_name:"user-circle", lastmsg:"Hello room 3", status:"ok"},
-      {name:"room4", icon_name:"user-circle", lastmsg:"Hello room 4", status:"ok"},
-      {name:"room5", icon_name:"user-circle", lastmsg:"Hello room 5", status:"ok"},
-      {name:"room6", icon_name:"user-circle", lastmsg:"Hello room 5", status:"ok"},
-      {name:"room7", icon_name:"user-circle", lastmsg:"Hello room 5", status:"ok"},
-      {name:"room8", icon_name:"user-circle", lastmsg:"Hello room 5", status:"ok"},
-      {name:"room9", icon_name:"user-circle", lastmsg:"Hello room 5", status:"ok"},
-      {name:"room10", icon_name:"user-circle", lastmsg:"Hello room 5", status:"ok"},
-      
+      {name:"room1", icon_name:"user-circle", lastmsg:"Hello room 1", status:"ok", id:"id1"},
+      {name:"room2", icon_name:"user-circle", lastmsg:"Hello room 2", status:"ok", id:"id2"},
+      {name:"room3", icon_name:"user-circle", lastmsg:"Hello room 3", status:"ok", id:"id3"},
+      {name:"room4", icon_name:"user-circle", lastmsg:"Hello room 4", status:"ok", id:"id4"},
+      {name:"room5", icon_name:"user-circle", lastmsg:"Hello room 5", status:"ok", id:"id5"},
+      {name:"room6", icon_name:"user-circle", lastmsg:"Hello room 5", status:"ok", id:"id6"},
+      {name:"room7", icon_name:"user-circle", lastmsg:"Hello room 5", status:"ok", id:"id7"},
+      {name:"room8", icon_name:"user-circle", lastmsg:"Hello room 5", status:"ok", id:"id8"},
+      {name:"room9", icon_name:"user-circle", lastmsg:"Hello room 5", status:"ok", id:"id9"},
+      {name:"room10", icon_name:"user-circle", lastmsg:"Hello room 5", status:"ok", id:"id10"},
   ];
   var room_list_ui = [];
 
@@ -33,7 +32,9 @@ export default  class Open_room extends React.Component{
   room_temp.forEach(function(room, index){
     room_list_ui.push(
       //特定のルームに移動する頃はできていないので調整必要
-      <TouchableOpacity onPress={() => { navigation.navigate("Room"); }} 
+      <TouchableOpacity onPress={() => { 
+        navigation.navigate("Room", {roomid : room.id}); 
+      }} 
         style={{ justifyContent: 'space-between', flexDirection: 'row', height:80}}>
           <View style={{width:50, height:50, marginLeft:20,marginTop:20}}>
           <Icon name={room.icon_name} size={45} />

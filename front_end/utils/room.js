@@ -25,25 +25,67 @@ export default class ChatView extends Component {
       { direction:'right', usrIconURL:photo_shunji, text:"逃げちゃだめだ、逃げちゃだめだ、逃げちゃだめだ、逃げちゃだめだ、逃げちゃだめだ！！！！", reactions:"" },
       { direction:'left', usrIconURL:photo_shunji, text:"リアクションサンプル：", reactions:"" }
     ];
-    this.state = {
-      //bell:photo_bell,
-      noti:6,
-      roomName:"TouChaグル",
-      members : [],
-      messages: messages,
-      inputBarText: ''
-    }
+
+    //render関数がaddEventListener(focus)で指定している関数よりも先に呼ばれたときに変数宣言がないとエラーになるので宣言だけしておく。
+    // render関数の中でこの値が初期化されているかどうかでif文をかくべし
+    this.state = {messages:messages};
+    this.socket = null;
+    this.isSocketVerified = false;
+    this.isSocketConnected = false;
+
+    this.init();
+
+    // Room画面に遷移したときに実行される
+    const unsubscribe = props.navigation.addListener('focus', () => { this.init(); });
+
+    console.log("exit constructor() function");
+  }
+  
+
+  // ↓これがなんのためにあるのかよくわかっていない。削除予定
+  // static navigationOptions = {
+  // title: 'Chat',
+  // };
+
+  init(){
+    this.state.noti = 6;
+    this.state.inputBarText = "";
+    this.state.members = [];
 
     console.log("starting socket.io .....,");
-    this.socket = io("http://localhost:3000", {transports: ['websocket']} );
+    this.isSocketVerified = false;
+    this.isSocketConnected = false;
+
+    try{
+      this.socket = io("http://localhost:3000", {transports: ['websocket']} );
+    }catch{
+      console.log("ソケットの接続に失敗しました。インターネットにつながっていない可能性があります")
+    }
+   
+    // ------------------------------  ソケット通信をユーザーでログインしてVerifyする  --------------------------------
+    var send_msg = {
+      'event':'login',
+      'userid':'000',
+      'hashed_pass' : 'password',
+      'ts' : new Date().getTime() // タイムスタンプ　https://wiki.aleen42.com/qa/timestamp.html
+    }
+    console.log(send_msg);
+
+    this.socket.emit('message', send_msg);
+    this.socket.on('login-verify', function(msg){
+      console.log(msg);
+      this.isSocketVerified = true;
+      console.log("ユーザー認証に失敗しました。ルームに参加していない可能性があります");
+    });
+
     // this.socket.on("seq-num", (msg) => console.info(msg));
-    console.log("exit constructor() function");
 
-  }
+    const myparams  = this.props.route.params;
+    this.state.roomName = myparams.roomid;
+    this.state.roomID = myparams.roomid;
 
-  init(rn){ // 引数rnはroomName
-    console.log("現在開いているルームを設定：" + rn);
-    this.state.roomName = rn;
+    // TODO最終的には以下のように実装する予定
+    // this.state.roomName = getRoomName(this.props.navigation.navigate.state.roomid);
     // try{
       // this.state.members = getMemberList(i); // サーバーのDBからメンバーリスト取得
       // this.state.messages = getLast50Msg(i); // サーバーからラスト50件のメッセージを取得
@@ -53,17 +95,13 @@ export default class ChatView extends Component {
     // }
   }
 
-  // ↓これがなんのためにあるのかよくわかっていない。削除予定
-  // static navigationOptions = {
-  // title: 'Chat',
-  // };
-
 
   // --------------------------------------------------------------------------
   //        UIの細かい表示の設定
   // --------------------------------------------------------------------------
 
   RoomScrolltoEndWrapper (e) {this.scrollView.scrollToEnd();}
+/*
   UNSAFE_componentWillMount () {
     // ンポーネントがマウント(配置)される直前に呼び出される
     this.keyboardDidShowListener = Keyboard.addListener('keyboardDidShow', this.RoomScrolltoEndWrapper.bind(this));
@@ -72,7 +110,8 @@ export default class ChatView extends Component {
   componentWillUnmount() { this.keyboardDidShowListener.remove(); this.keyboardDidHideListener.remove();}
   componentDidMount()   {setTimeout(function() {this.RoomScrolltoEndWrapper(this);}.bind(this)); } // アプリ起動時に最下部までスクロール
   componentDidUpdate() { setTimeout(function() {this.RoomScrolltoEndWrapper(this);}.bind(this));  } //メッセージが追加されたときに最下部までスクロール
-  
+*/
+
   _sendMessage() {
     var send_msg = {
       'event':'send-message',
@@ -109,12 +148,25 @@ export default class ChatView extends Component {
     }.bind(this))
   }
 
+  // ルーム一覧画面に戻る
+  backtoArchive(){
+    this.socket.emit('message', {'event':'leave-room', 'user':'000'});
+    this.socket.close();
+
+    const { navigation } = this.props;
+    navigation.navigate("OpenRoom");
+  }
+
   render() {
+    // ------------------------- ルームの設定 ----------------------------------------
     var messages = [];
     var that = this;
+    // while(this.socket == null){
+    //   this.init();
+    // }
 
     this.socket.on('message', function(msg) {
-      console.log("ahaha" + msg);
+      console.log("ahaha " + msg);
       const findresult = that.state.messages.some((u) => u.text === msg);
       if (!findresult) {
         that.state.messages.push({ direction:'left', usrIconURL:photo_qb,  text:msg, reactions:"" });
@@ -143,13 +195,13 @@ export default class ChatView extends Component {
 
       <View style={styles.outer}>
           <View style={styles.topBar}>
-          <TouchableHighlight>
+          <TouchableHighlight onPress={() => { this.backtoArchive(); }} >
                 <Text style={styles.backButton}>&lt; {this.state.noti}</Text>
-              </TouchableHighlight>
-              <Text style={styles.textTop}>{this.state.roomName}({this.state.member})</Text>
-              <TouchableHighlight>
+          </TouchableHighlight>
+              <Text style={styles.textTop}>{this.state.roomName}({this.state.members.length})</Text>
+            <TouchableHighlight>
               <Image source={require("../../misc/front_end/chat_test/images/bell.png")} style={styles.bell}/>
-              </TouchableHighlight>
+            </TouchableHighlight>
           </View>
           <KeyboardAvoidingView
               style={{ flex: 1 }}
@@ -172,9 +224,6 @@ export default class ChatView extends Component {
             >
               {/* {this.renderIcon()} */}
             </TouchableOpacity>
-
-
-
           {/* <KeyboardSpacer/>              */}
           </KeyboardAvoidingView>
           <View style={styles.bottom}></View>
@@ -218,16 +267,12 @@ class MessageBubble extends Component {
 //The bar at the bottom with a textbox and a send button.
 class InputBar extends Component {
 
-  //AutogrowInput doesn't change its size when the text is changed from the outside.
-  //Thus, when text is reset to zero, we'll call it's reset function which will take it back to the original size.
-  //Another possible solution here would be if InputBar kept the text as state and only reported it when the Send button
-  //was pressed. Then, resetInputText() could be called when the Send button is pressed. However, this limits the ability
-  //of the InputBar's text to be set from the outside.
-  UNSAFE_componentWillReceiveProps(nextProps) {
-    if(nextProps.text === '') {
-      this.autogrowInput.resetInputText();
-    }
-  }
+  // componentUnMount系はrenameされて使わないほうが良いとWarningが出ていたので
+  // UNSAFE_componentWillReceiveProps(nextProps) {
+  //   if(nextProps.text === '') {
+  //     this.autogrowInput.resetInputText();
+  //   }
+  // }
 
   render() {
     return (
@@ -248,9 +293,8 @@ class InputBar extends Component {
                 {/* <Image source={require("../../misc/front_end/chat_test/images/submit_arrow.png")} style={styles.arrow}/> */}
             </TouchableHighlight>
           </View> 
-
-          </>
-          );
+      </>
+    );
   }
 }
 

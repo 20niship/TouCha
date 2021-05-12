@@ -98,7 +98,6 @@ export default class ChatView extends React.Component {
     });
 
     return (
-
       <View style={styles.outer}>
           <View style={styles.topBar}>
           <TouchableHighlight>
