@@ -4,6 +4,7 @@ const { userInfo } = require('os');
 var app = express();
 var http = require('http').Server(app);
 const io = require('socket.io')(http);
+const mysql = require('mysql');
 var sockets = {}
 
 io.on('connection',function(socket){
@@ -65,11 +66,28 @@ function login(data){
     }
 
 }
-function getuserinfo(id){
-    //テスト用
-    return {
-        password:"hoge",
-        varified:true
-    }
-    //てすとここまで
+function getuserinfo(userid){
+    const con = mysql.createConnection({
+        host: 'localhost',
+        user: 'user',
+        password: 'password',
+        database: 'info'
+    })
+    con.query('SELECT * FROM info WHERE userid = ?',
+    [userid],
+    (err, rows) => {
+        if(err){
+            //なんかエラー
+            return {hashedPassword:""};
+        }
+        if(rows.length == 0){
+            //ユーザーが見つかりません
+            return {hashedPassword:""};
+        }else if(rows.length > 1){
+            //重複登録がある
+            return {hashedPassword:""};
+        }else{
+            return rows[0];
+        }
+    });
 }
