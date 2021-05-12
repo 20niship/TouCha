@@ -337,3 +337,12 @@ venv/
 
 .db
 
+misc/front_end/chat_test/.expo/packager-info.json
+
+misc/front_end/chat_test/.expo/settings.json
+
+misc/front_end/chat_test/App.js
+
+misc/front_end/chat_test/package.json
+
+misc/front_end/chat_test/yarn.lock
