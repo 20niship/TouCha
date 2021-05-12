@@ -1,20 +1,17 @@
 import React, { Component } from 'react';
-import { Text, View, Image, StyleSheet, ScrollView, KeyboardAvoidingView, TextInput, TouchableHighlight, Keyboard } from 'react-native';
+import { Text, View, Image, StyleSheet, ScrollView, KeyboardAvoidingView, TextInput, TouchableHighlight, TouchableOpacity, Keyboard } from 'react-native';
 import AutogrowInput from 'react-native-autogrow-input';
 import io from "socket.io-client";
+import Icon from 'react-native-vector-icons/FontAwesome';
 
-const socket = io('https://acbc591940e9.ngrok.io', {transports: ['websocket']} );
+// before : io('https://acbc591940e9.ngrok.io', {transports: ['websocket']} );
+// const socket = io("http://localhost:3000", {transports: ['websocket']} );
 
 // 一時的に画像を読み込む（テスト用のみ）
-import photo_nerv from './images/nerv.jpg'
-import photo_qb   from './images/qb.jpg'
-import photo_shunji from './images/shinji.jpg'
+import photo_nerv from '../../misc/front_end/chat_test/images/nerv.jpg'
+import photo_qb   from '../../misc/front_end/chat_test/images/qb.jpg'
+import photo_shunji from '../../misc/front_end/chat_test/images/shinji.jpg'
 // import photo_bell from "./images/bell.png"
-
-//used to make random-sized messages
-function getRandomInt(min, max) {
-    return Math.floor(Math.random() * (max - min + 1)) + min;
-}
 
 export default class ChatView extends Component {
   constructor(props) {
@@ -32,15 +29,39 @@ export default class ChatView extends Component {
       //bell:photo_bell,
       noti:6,
       roomName:"TouChaグル",
-      member:7,
+      members : [],
       messages: messages,
       inputBarText: ''
     }
+
+    console.log("starting socket.io .....,");
+    this.socket = io("http://localhost:3000", {transports: ['websocket']} );
+    // this.socket.on("seq-num", (msg) => console.info(msg));
+    console.log("exit constructor() function");
+
   }
 
-  static navigationOptions = {
-    title: 'Chat',
-  };
+  init(rn){ // 引数rnはroomName
+    console.log("現在開いているルームを設定：" + rn);
+    this.state.roomName = rn;
+    // try{
+      // this.state.members = getMemberList(i); // サーバーのDBからメンバーリスト取得
+      // this.state.messages = getLast50Msg(i); // サーバーからラスト50件のメッセージを取得
+      // saveMsgtoCache(); // this.state.messagesをキャッシュ（ローカルファイル）に保存する
+    // }catch{
+      // サーバーに接続できない、すでにルームが削除されている、ほかのデバイスでルームの退会処理を行ったなどの場合はerrorとしてキャッチする。
+    // }
+  }
+
+  // ↓これがなんのためにあるのかよくわかっていない。削除予定
+  // static navigationOptions = {
+  // title: 'Chat',
+  // };
+
+
+  // --------------------------------------------------------------------------
+  //        UIの細かい表示の設定
+  // --------------------------------------------------------------------------
 
   RoomScrolltoEndWrapper (e) {this.scrollView.scrollToEnd();}
   UNSAFE_componentWillMount () {
@@ -48,13 +69,20 @@ export default class ChatView extends Component {
     this.keyboardDidShowListener = Keyboard.addListener('keyboardDidShow', this.RoomScrolltoEndWrapper.bind(this));
     this.keyboardDidHideListener = Keyboard.addListener('keyboardDidHide', this.RoomScrolltoEndWrapper.bind(this));
   }
-
   componentWillUnmount() { this.keyboardDidShowListener.remove(); this.keyboardDidHideListener.remove();}
-   
   componentDidMount()   {setTimeout(function() {this.RoomScrolltoEndWrapper(this);}.bind(this)); } // アプリ起動時に最下部までスクロール
   componentDidUpdate() { setTimeout(function() {this.RoomScrolltoEndWrapper(this);}.bind(this));  } //メッセージが追加されたときに最下部までスクロール
-
+  
   _sendMessage() {
+    var send_msg = {
+      'event':'send-message',
+      'text' : this.state.inputBarText,
+      'room' : this.roomName,
+      'ts' : new Date().getTime() // タイムスタンプ　https://wiki.aleen42.com/qa/timestamp.html
+    }
+    console.log(send_msg);
+    this.socket.emit('message', send_msg);
+    
     this.state.messages.push({ direction:'right', usrIconURL:photo_qb,  text: this.state.inputBarText, reactions:"" });
 
 //    socket.emit('message', this.state.inputBarText);
@@ -85,8 +113,7 @@ export default class ChatView extends Component {
     var messages = [];
     var that = this;
 
-    socket.on('message', function(msg) {
-
+    this.socket.on('message', function(msg) {
       console.log("ahaha" + msg);
       const findresult = that.state.messages.some((u) => u.text === msg);
       if (!findresult) {
@@ -121,7 +148,7 @@ export default class ChatView extends Component {
               </TouchableHighlight>
               <Text style={styles.textTop}>{this.state.roomName}({this.state.member})</Text>
               <TouchableHighlight>
-              <Image source={require("./images/bell.png")} style={styles.bell}/>
+              <Image source={require("../../misc/front_end/chat_test/images/bell.png")} style={styles.bell}/>
               </TouchableHighlight>
           </View>
           <KeyboardAvoidingView
@@ -137,6 +164,17 @@ export default class ChatView extends Component {
                     onSizeChange={() => this._onInputSizeChange()}
                     onChangeText={(text) => this._onChangeInputBarText(text)}
                     text={this.state.inputBarText}/>
+           
+           <TouchableOpacity
+              style={{ marginLeft: 8 }}
+              onPress={() => {this._sendMessage()} }
+              activeOpacity={0.7}
+            >
+              {/* {this.renderIcon()} */}
+            </TouchableOpacity>
+
+
+
           {/* <KeyboardSpacer/>              */}
           </KeyboardAvoidingView>
           <View style={styles.bottom}></View>
@@ -196,7 +234,7 @@ class InputBar extends Component {
       <>
           <View style={styles.inputBar}>
             <TouchableHighlight>
-              <Image source={require("./images/plus.png")} style={styles.plus}/>
+              <Image source={require("../../misc/front_end/chat_test/images/plus.png")} style={styles.plus}/>
             </TouchableHighlight>
             <AutogrowInput style={styles.textBox}
                         ref={(ref) => { this.autogrowInput = ref }} 
@@ -205,13 +243,9 @@ class InputBar extends Component {
                         onChangeText={(text) => this.props.onChangeText(text)}
                         onContentSizeChange={this.props.onSizeChange}
                         value={this.props.text}/>
-            <TouchableHighlight style={styles.sendButton} onPress={() =>
-            {     
-              socket.emit('message', this.props.text);
-              this.props.onSendPressed();
-            }
-            }>
-                <Image source={require("./images/submit_arrow.png")} style={styles.arrow}/>
+            <TouchableHighlight style={styles.sendButton} onPress={() =>{this.props.onSendPressed();}}>
+                <Icon name="paper-plane" />
+                {/* <Image source={require("../../misc/front_end/chat_test/images/submit_arrow.png")} style={styles.arrow}/> */}
             </TouchableHighlight>
           </View> 
 
