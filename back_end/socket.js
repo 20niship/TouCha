@@ -22,13 +22,14 @@ io.on('connection',function(socket){
     );
     // ソケット接続語、ログイン（ユーザー認証）を行う
     socket.on('login', function(msg){
-        console.log(msg);
         var message = JSON.parse(msg);
-
+        console.log("checking new user --> " + message.userid + " , " + message.hashedPassword); 
+        // チェック処理
+        socket.emit("login-verify", "login-accepted");
+        // socket.emit("login-verify", "login-error");
     });
 
     socket.on('message',function(msg){
-        console.log(msg);
         var aaaaaaaaa = JSON.parse(msg);
         console.log("get new message!");
         console.log(aaaaaaaaa);
@@ -63,6 +64,7 @@ io.on('connection',function(socket){
     });
 });
 
+
 function login(data){
     //ユーザー情報取得
     gainedUserInfo = getuserinfo(data.id);
@@ -79,12 +81,30 @@ function login(data){
     }
 
 }
-function getuserinfo(id){
-    //テスト用
-    return {
-        password:"hoge",
-        varified:true
-    }
-    //てすとここまで
-}
 
+
+function getuserinfo(userid){
+    const con = mysql.createConnection({
+        host: 'localhost',
+        user: 'user',
+        password: 'password',
+        database: 'info'
+    })
+    con.query('SELECT * FROM info WHERE userid = ?',
+    [userid],
+    (err, rows) => {
+        if(err){
+            //なんかエラー
+            return {hashedPassword:""};
+        }
+        if(rows.length == 0){
+            //ユーザーが見つかりません
+            return {hashedPassword:""};
+        }else if(rows.length > 1){
+            //重複登録がある
+            return {hashedPassword:""};
+        }else{
+            return rows[0];
+        }
+    });
+}
