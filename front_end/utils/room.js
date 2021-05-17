@@ -176,7 +176,7 @@ export default class ChatView extends Component {
     console.log(send_msg);
     this.socket.emit('message', JSON.stringify(send_msg));
     
-    this.state.messages.push({ direction:'right', usrIconURL:photo_qb,  text: this.state.inputBarText, reactions:"" });
+    this.state.messages.push({ direction:'right', usrIconURL:"https://pbs.twimg.com/profile_images/1264490158121869313/maQmeRbN_400x400.jpg",  text: this.state.inputBarText, reactions:"" });
 
     this.setState({
       messages: this.state.messages,
@@ -223,7 +223,7 @@ export default class ChatView extends Component {
       var j_msg = JSON.parse(msg);
       // const findresult = that.state.messages.some((u) => u.text === msg);
       // if (!findresult) {
-        that.state.messages.push({ direction:'left', usrIconURL:photo_qb,  text:j_msg.text, reactions:"" });
+        that.state.messages.push({ direction:'left', usrIconURL:"https://pbs.twimg.com/profile_images/1264490158121869313/maQmeRbN_400x400.jpg",  text:j_msg.text, reactions:"" });
         that.setState({
         messages: that.state.messages,
         inputBarText: ''
