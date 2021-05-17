@@ -8,16 +8,16 @@ export default  class Open_room extends React.Component{
   render(){
     const { navigation } = this.props;
   const room_temp = [
-      {name:"room1", icon_name:"user-circle", lastmsg:"Hello room 1", status:"ok", id:"id1"},
-      {name:"room2", icon_name:"user-circle", lastmsg:"Hello room 2", status:"ok", id:"id2"},
-      {name:"room3", icon_name:"user-circle", lastmsg:"Hello room 3", status:"ok", id:"id3"},
-      {name:"room4", icon_name:"user-circle", lastmsg:"Hello room 4", status:"ok", id:"id4"},
-      {name:"room5", icon_name:"user-circle", lastmsg:"Hello room 5", status:"ok", id:"id5"},
-      {name:"room6", icon_name:"user-circle", lastmsg:"Hello room 5", status:"ok", id:"id6"},
-      {name:"room7", icon_name:"user-circle", lastmsg:"Hello room 5", status:"ok", id:"id7"},
-      {name:"room8", icon_name:"user-circle", lastmsg:"Hello room 5", status:"ok", id:"id8"},
-      {name:"room9", icon_name:"user-circle", lastmsg:"Hello room 5", status:"ok", id:"id9"},
-      {name:"room10", icon_name:"user-circle", lastmsg:"Hello room 5", status:"ok", id:"id10"},
+      {name:"room1", icon_name:"user-circle", lastmsg:"Hello room 1", status:"ok", id:"rid1"},
+      {name:"room2", icon_name:"user-circle", lastmsg:"Hello room 2", status:"ok", id:"rid2"},
+      {name:"room3", icon_name:"user-circle", lastmsg:"Hello room 3", status:"ok", id:"rid3"},
+      {name:"room4", icon_name:"user-circle", lastmsg:"Hello room 4", status:"ok", id:"rid4"},
+      {name:"room5", icon_name:"user-circle", lastmsg:"Hello room 5", status:"ok", id:"rid5"},
+      {name:"room6", icon_name:"user-circle", lastmsg:"Hello room 5", status:"ok", id:"rid6"},
+      {name:"room7", icon_name:"user-circle", lastmsg:"Hello room 5", status:"ok", id:"rid7"},
+      {name:"room8", icon_name:"user-circle", lastmsg:"Hello room 5", status:"ok", id:"rid8"},
+      {name:"room9", icon_name:"user-circle", lastmsg:"Hello room 5", status:"ok", id:"rid9"},
+      {name:"room10", icon_name:"user-circle", lastmsg:"Hello room 5", status:"ok", id:"rid10"},
   ];
   var room_list_ui = [];
 

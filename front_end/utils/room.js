@@ -4,6 +4,8 @@ import AutogrowInput from 'react-native-autogrow-input';
 import io from "socket.io-client";
 import Icon from 'react-native-vector-icons/FontAwesome';
 
+import axios from 'axios'; // POST通信で使用
+
 // before : io('https://acbc591940e9.ngrok.io', {transports: ['websocket']} );
 // const socket = io("http://localhost:3000", {transports: ['websocket']} );
 
@@ -47,6 +49,40 @@ export default class ChatView extends Component {
   // title: 'Chat',
   // };
 
+  async trySocketVerification(){
+    console.log("ユーザー認証実施中、、、、")
+    var send_msg = {
+      'event':'login',
+      'userid':'id2',
+      'room_id':this.state.roomID,
+      'hashed_pass' : 'password02',
+      'ts' : new Date().getTime() // タイムスタンプ　https://wiki.aleen42.com/qa/timestamp.html
+    }
+
+    this.socket.on('login-verify', (msg)=>{
+      if(msg == "login-accepted"){
+        this.isSocketVerified = true;
+        console.log("User authenticated");
+        return true;
+      }else{
+        alert("ユーザー認証に失敗しました。ルームに参加していない可能性があります");
+        this.backtoArchive();
+      }
+    });
+
+
+    // for (let step = 0; step < 2; step++) {
+      this.socket.emit('login', JSON.stringify(send_msg));
+      
+      // await sleep(500);
+
+      console.log("authentication trying.....");
+      // if(this.isSocketVerified){
+      //   return true;
+      // }
+    // }
+  }
+
   init(){
     this.state.noti = 6;
     this.state.inputBarText = "";
@@ -63,26 +99,27 @@ export default class ChatView extends Component {
     }
    
     // ------------------------------  ソケット通信をユーザーでログインしてVerifyする  --------------------------------
-    var send_msg = {
-      'event':'login',
-      'userid':'000',
-      'hashed_pass' : 'password',
-      'ts' : new Date().getTime() // タイムスタンプ　https://wiki.aleen42.com/qa/timestamp.html
-    }
-    console.log(send_msg);
-
-    this.socket.emit('message', send_msg);
-    this.socket.on('login-verify', function(msg){
-      console.log(msg);
-      this.isSocketVerified = true;
-      console.log("ユーザー認証に失敗しました。ルームに参加していない可能性があります");
-    });
-
-    // this.socket.on("seq-num", (msg) => console.info(msg));
 
     const myparams  = this.props.route.params;
     this.state.roomName = myparams.roomid;
     this.state.roomID = myparams.roomid;
+
+    this.trySocketVerification();
+    this.isSocketVerified = true;
+
+
+    // 最新の50件のメッセージを受け取る
+    var send_msg_to_get_latest50msg = {
+      userid : "id1",
+      hashed_pass : "password01",
+      room_id : this.state.roomID
+    };
+    axios
+      .post('http://localhost/api/getLast50msg:3000', JSON.stringify(send_msg_to_get_latest50msg))
+      .then((res) => {
+        console.log(res.data);
+      }).catch(error => console.log(error));
+
 
     // TODO最終的には以下のように実装する予定
     // this.state.roomName = getRoomName(this.props.navigation.navigate.state.roomid);
@@ -113,18 +150,25 @@ export default class ChatView extends Component {
 */
 
   _sendMessage() {
+    // console.log(this.isSocketVerified);
+    // if(! this.isSocketVerified){
+    //   this.trySocketVerification();
+    //   if(!this.trySocketVerification){
+    //     alert("User noe Allowed to enter this room!!");
+    //     this.backtoArchive();
+    //   }
+    // }
+
     var send_msg = {
       'event':'send-message',
       'text' : this.state.inputBarText,
-      'room' : this.roomName,
+      'room_id' : this.state.roomID,
       'ts' : new Date().getTime() // タイムスタンプ　https://wiki.aleen42.com/qa/timestamp.html
     }
     console.log(send_msg);
-    this.socket.emit('message', send_msg);
+    this.socket.emit('message', JSON.stringify(send_msg));
     
     this.state.messages.push({ direction:'right', usrIconURL:photo_qb,  text: this.state.inputBarText, reactions:"" });
-
-//    socket.emit('message', this.state.inputBarText);
 
     this.setState({
       messages: this.state.messages,
@@ -150,7 +194,7 @@ export default class ChatView extends Component {
 
   // ルーム一覧画面に戻る
   backtoArchive(){
-    this.socket.emit('message', {'event':'leave-room', 'user':'000'});
+    this.socket.emit('leave-room', JSON.stringify({'event':'leave-room', 'room':this.state.roomID, 'user':'000'}));
     this.socket.close();
 
     const { navigation } = this.props;
@@ -266,7 +310,6 @@ class MessageBubble extends Component {
 
 //The bar at the bottom with a textbox and a send button.
 class InputBar extends Component {
-
   // componentUnMount系はrenameされて使わないほうが良いとWarningが出ていたので
   // UNSAFE_componentWillReceiveProps(nextProps) {
   //   if(nextProps.text === '') {
