@@ -11,23 +11,22 @@ io.on('connection',function(socket){
     console.log('connected!')
     socketId = socket.id
     //socketsにIDをKeyにして情報を入れる
-    sockets.id = {
+    sockets.socketId = {
         socket : socket,
         logined : false
     }
     socket.on('message',function(msg){
-        //送られたJsonを変数にする
+        //送られたJsonを変数(連想配列)にする
         message = JSON.parse(msg);
         //msg.protocolの内容で処理を分岐
         switch (message.protocol){
             //ログインするときの処理
             case "login":
                 data = message.data;
-                console.log(data)
                 result = login(data);
                 if (result.result == "succeeded"){
                     //ログイン出来たらフラグをtrueにする
-                    sockets.id.logined = true
+                    sockets.socketid.logined = true
                 }else if(result.result == "unverified"){
                     //なんかメール送る処理
 
@@ -57,7 +56,7 @@ function login(data){
     if (data.hashedPassword == gainedUserInfo.password){
         //メール認証されてるかな
         if (gainedUserInfo.varified){
-            return {result:"succeed"};
+            return {result:"succeeded"};
         }else{
             return {result:"unvarified"};
         }
