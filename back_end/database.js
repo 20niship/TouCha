@@ -147,13 +147,13 @@ class DBmanager{
         ];
 
         var messages = [
-            { direction:'left', usrIconURL:"photo_nerv", text:"いかりしんじ、エヴァに乗れ！！", reactions:"" }, 
-            { direction:'left', usrIconURL:"photo_nerv", text:"でなければ、、帰れ！", reactions:"" }, 
-            { direction:'left', usrIconURL:"photo_nerv", text:"やっはろーーーーーあああああああああああああああ", reactions:"" }, 
-            { direction:'right', usrIconURL:"photo_qb", text:"わけがわからないよわけがわからないよわけがわからないよわけがわからないよわけがわからないよ", reactions:"" }, 
-            { direction:'left', usrIconURL:"photo_nerv", text:"いかりしんじ、エヴァに乗れ！！", reactions:"" }, 
-            { direction:'right', usrIconURL:"photo_shunji", text:"逃げちゃだめだ、逃げちゃだめだ、逃げちゃだめだ、逃げちゃだめだ、逃げちゃだめだ！！！！", reactions:"" },
-            { direction:'left', usrIconURL:"photo_shunji", text:"リアクションサンプル：", reactions:"" }
+            { direction:'left', usrIconURL:"https://pbs.twimg.com/profile_images/1264490158121869313/maQmeRbN_400x400.jpg", text:"いかりしんじ、エヴァに乗れ！！", reactions:"" }, 
+            { direction:'left', usrIconURL:"https://pbs.twimg.com/profile_images/1264490158121869313/maQmeRbN_400x400.jpg", text:"でなければ、、帰れ！", reactions:"" }, 
+            { direction:'left', usrIconURL:"https://pbs.twimg.com/profile_images/1264490158121869313/maQmeRbN_400x400.jpg", text:"やっはろーーーーーあああああああああああああああ", reactions:"" }, 
+            { direction:'right', usrIconURL:"https://pbs.twimg.com/profile_images/1264490158121869313/maQmeRbN_400x400.jpg", text:"わけがわからないよわけがわからないよわけがわからないよわけがわからないよわけがわからないよ", reactions:"" }, 
+            { direction:'left', usrIconURL:"https://pbs.twimg.com/profile_images/1264490158121869313/maQmeRbN_400x400.jpg", text:"いかりしんじ、エヴァに乗れ！！", reactions:"" }, 
+            { direction:'right', usrIconURL:"https://pbs.twimg.com/profile_images/1264490158121869313/maQmeRbN_400x400.jpg", text:"逃げちゃだめだ、逃げちゃだめだ、逃げちゃだめだ、逃げちゃだめだ、逃げちゃだめだ！！！！", reactions:"" },
+            { direction:'left', usrIconURL:"https://pbs.twimg.com/profile_images/1264490158121869313/maQmeRbN_400x400.jpg", text:"リアクションサンプル：", reactions:"" }
         ];
 
         this.mongodb_obj.collection(this.cl_users).insertMany(user_list);

@@ -1,16 +1,35 @@
 const { appendFileSync } = require('fs');
-const { userInfo } = require('os');
 const __mydb = require("./database");
 const DBManager = new __mydb()
 
 // expressも使うように変更
-const app = require('express')();
+const express = require('express');
+const app = express();
 const http = require('http').Server(app);
 const io = require('socket.io')(http);
 
 // ↓CORSエラー対策。 TODO:実機実装後は削除予定？
-const cors = require('cors');
-app.use(cors());
+// const cors = require('cors');
+// app.use(cors());
+
+// ↑で動作しなかったので↓にした
+app.use((req, res, next) => {
+    res.header("Access-Control-Allow-Origin", "*");
+    res.header("Access-Control-Allow-Methods", "GET,POST,PUT,DELETE");
+    res.header(
+      "Access-Control-Allow-Headers",
+      "Origin, X-Requested-With, Content-Type, Accept"
+    );
+    next();
+});
+
+
+// JSONでHTTPRequestのデータをパース
+const port = 3000
+
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
 
 // locahostで動かなかったので→リンクを見ながらちょっと修正：https://gist.github.com/luciopaiva/e6f60bd6e156714f0c5505c2be8e06d8
 // const {Server} = require('socket.io');
@@ -49,14 +68,20 @@ class sockUsers{
     }
 
     printAllUsers(){
-        console.log("----------------------  Socket User List   --------------------------")
+        console.log("---------------------- ↓ Socket User List  ↓  --------------------------")
         this.user_list.forEach(i => { console.log(i.user_id, i.room_id, i.login) });   
-        console.log("----------------------  Socket User List   --------------------------")
+        console.log("---------------------- ↑ Socket User List  ↑ --------------------------")
     }
 
     deleteUser(sockObj_){
         for(var i = 0; i < this.user_list.length; i++){
-            if(this.user_list[i].sockObj === sockObj_){
+        if(this.user_list[i] === undefined){
+            console.log("[ DEBUG ] 不正なユーザーキーを削除しました（React Nativeを起動したままサーバーをリセットするとこれが発生する）")
+            delete this.user_list[i];
+        }else if(!this.user_list[i].hasOwnProperty('sockObj') ){
+            delete this.user_list[i];
+            console.log("[ DEBUG ] 不正なユーザーキーを削除しました（React Nativeを起動したままサーバーをリセットするとこれが発生する）")
+        }else if(this.user_list[i].sockObj === sockObj_){
                 delete this.user_list[i];
                 console.log("[ INFO ] ユーザーをSocketリスト一覧から削除しました")
                 return true;
@@ -69,14 +94,11 @@ class sockUsers{
     getSockInfoList(user_id_){
         var result = [];
         this.user_list.forEach(ul => {
-            if(ul.user_id === user_id_){
-                result.push(ul);
-            }
+            if(ul.user_id === user_id_){ result.push(ul); }
         });
         return result;
     }
 }
-
 
 var sock_users = new sockUsers();
 
@@ -89,16 +111,26 @@ app.get('/', function (req, res) {
 
 
 app.post("/api/getLast50msg", function(req, res){
-    var room_id = req.room_id;
+    if(!req.body.hasOwnProperty("room_id")){
+        console.log("No argument room_id");
+        res.send(JSON.stringify({status:"error", description:"No argument-room_id"}))
+        return;
+    }
+    var room_id = req.body.room_id;
 
     var result = []
     var dbObj = DBManager.getDB();
     dbObj.collection("cl_chat").find({ id : room_id }).toArray((error, docs)=>{
+        if(docs.length === 0){
+            console.log("[ ERROR ] No room -> " + room_id);
+            res.send(JSON.stringify({status:"error", description:"Invalid room_id " + room_id}))
+            return;
+        }
+
         console.log("get - /api/getLast50msg - 200 OK");
         // for (var i = 0; i < Math.min(10, 50); i++) {
             result = docs[0].msgs;
         // }
-        console.log(result);
         // res.setHeader('Access-Control-Allow-Origin', 'http://localhost:3000')
         res.send(JSON.stringify(result));
     });
@@ -113,45 +145,76 @@ app.post("/api/getLast50msg", function(req, res){
     // });    
 });
 
-io.on('connection',function(socket){
-    console.log('connected!');
- 
-    // ソケット接続語、ログイン（ユーザー認証）を行う
-    socket.on('login', function(msg){
-        var message = JSON.parse(msg);
-        console.log("checking new user --> " + message.userid + " , " + message.hashed_pass); 
 
-        var dbObj = DBManager.getDB();
-        dbObj.collection("cl_users").find({ id : message.userid, hashed_password:message.hashed_pass }).toArray((error, res)=>{
-            if(res.length == 0){
-                console.log("no such user id = " + message.userid );
-                socket.emit("login-verify", "login-deny");
-                return;
-            }else{
-                console.log("User Found!!");
-                dbObj.collection("cl_rooms").find({ id : message.room_id }).toArray((error, res)=>{
-                    if(res.length == 0){
-                        console.log("no such room id = " + message.room_id );
-                        socket.emit("login-verify", "login-deny");
-                        sock_users.addUser_room_type(socket, message.userid, message.room_id, false);
-                        return false
-                    }
-                    console.log(res[0].user_list);
-                    if(res[0].user_list.includes(message.userid)){
-                        console.log("User is in room!!")
-                        socket.emit("login-verify", "login-accepted");
-                        sock_users.addUser_room_type(socket, message.userid, message.room_id, true);
-                    }else{
-                        console.log("user not in room!!");
-                        sock_users.addUser_room_type(socket, message.userid, message.room_id, false);
-                    }
-                });
-            }
-        });
+app.post("/api/getInfo", function(req, res){
+    if(!req.body.hasOwnProperty("room_id")){
+        console.log("No argument room_id");
+        res.send(JSON.stringify({status:"error", description:"No argument-room_id"}))
+        return;
+    }
+    var userid = req.body.user_id;
+
+    var dbObj = DBManager.getDB();
+    dbObj.collection("cl_users").find({ id : userid }).toArray((error, docs)=>{
+        if(docs.length === 0){
+            console.log("[ ERROR ] No room -> " + room_id);
+            res.send(JSON.stringify({status:"error", description:"Invalid room_id " + room_id}))
+            return;
+        }
+        result = docs[0].msgs;
+        res.send(JSON.stringify(result));
+    });
+
+})
+
+
+io.on('connection',function(socket){
+
+console.log('connected!');
+
+// ソケット接続語、ログイン（ユーザー認証）を行う
+socket.on('login', function(msg){
+    var message = JSON.parse(msg);
+    console.log("checking new user --> " + message.userid + " , " + message.hashed_pass); 
+
+    var dbObj = DBManager.getDB();
+    dbObj.collection("cl_users").find({ id : message.userid, hashed_password:message.hashed_pass }).toArray((error, res)=>{
+        if(res.length == 0){
+            console.log("no such user id = " + message.userid );
+            socket.emit("login-verify", "login-deny");
+            return;
+        }else{
+            console.log("User Found!!");
+            dbObj.collection("cl_rooms").find({ id : message.room_id }).toArray((error, res)=>{
+                if(res.length == 0){
+                    console.log("no such room id = " + message.room_id );
+                    socket.emit("login-verify", "login-deny");
+                    sock_users.addUser_room_type(socket, message.userid, message.room_id, false);
+                    return false
+                }
+                console.log(res[0].user_list);
+                if(res[0].user_list.includes(message.userid)){
+                    console.log("User is in room!!")
+                    socket.emit("login-verify", "login-accepted");
+                    sock_users.addUser_room_type(socket, message.userid, message.room_id, true);
+                }else{
+                    console.log("user not in room!!");
+                    sock_users.addUser_room_type(socket, message.userid, message.room_id, false);
+                }
+            });
+        }
+    });
 
         // チェック処理
         // socket.emit("login-verify", "login-error");
     });
+
+    socket.on("leave-room", (msg) => {
+        console.log("leave room!!! --> ");
+        sock_users.deleteUser(socket);
+        // TODO : chat_socket_list.delete(hoge)
+    });
+
 
     socket.on('message',function(msg){
         var msg_parsed = JSON.parse(msg);
@@ -160,29 +223,23 @@ io.on('connection',function(socket){
         console.log("-----------------------------------------------");
 
         var dbObj = DBManager.getDB()
-        dbObj.collection("cl_chat").find({ id : msg_parsed.room_id }).toArray((error, res)=>{
+        dbObj.collection("cl_rooms").find({ id : msg_parsed.room_id }).toArray((error, res)=>{
             if(res.length == 0){
                 console.log("[ ERROR ] no such room id = " + msg_parsed.room_id );
                 return false
             }
-            console.log("aaaaaaaaaaaaaaaa" + res[0]);
-            
             sock_users.printAllUsers();
 
             (res[0].user_list).forEach(us => {
                 sock_list_tmp = sock_users.getSockInfoList(us);
                 sock_list_tmp.forEach(slt => {
-                    slt.sockObj.emit("message", JSON.stringify(msg_parsed));
-                    console.log("send message to  --> " + us);
+                    if(slt.sockObj !== socket){
+                        slt.sockObj.emit("message", JSON.stringify(msg_parsed));
+                        console.log("send message to  --> " + us);
+                    }
                 });
             });
             console.log("end");
-        });
-
-        socket.on("leave-room", (msg) => {
-            console.log("leave room!!! --> " + userInfo);
-            sock_users.deleteUser(socket);
-            // TODO : chat_socket_list.delete(hoge)
         });
 
         //msg.protocolの内容で処理を分岐

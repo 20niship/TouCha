@@ -9,28 +9,12 @@ import axios from 'axios'; // POST通信で使用
 // before : io('https://acbc591940e9.ngrok.io', {transports: ['websocket']} );
 // const socket = io("http://localhost:3000", {transports: ['websocket']} );
 
-// 一時的に画像を読み込む（テスト用のみ）
-import photo_nerv from '../../misc/front_end/chat_test/images/nerv.jpg'
-import photo_qb   from '../../misc/front_end/chat_test/images/qb.jpg'
-import photo_shunji from '../../misc/front_end/chat_test/images/shinji.jpg'
-// import photo_bell from "./images/bell.png"
-
 export default class ChatView extends Component {
   constructor(props) {
     super(props);
-    var messages = [
-      { direction:'left', usrIconURL:photo_nerv, text:"いかりしんじ、エヴァに乗れ！！", reactions:"" }, 
-      { direction:'left', usrIconURL:photo_nerv, text:"でなければ、、帰れ！", reactions:"" }, 
-      { direction:'left', usrIconURL:photo_nerv, text:"やっはろーーーーーあああああああああああああああ", reactions:"" }, 
-      { direction:'right', usrIconURL:photo_qb, text:"わけがわからないよわけがわからないよわけがわからないよわけがわからないよわけがわからないよ", reactions:"" }, 
-      { direction:'left', usrIconURL:photo_nerv, text:"いかりしんじ、エヴァに乗れ！！", reactions:"" }, 
-      { direction:'right', usrIconURL:photo_shunji, text:"逃げちゃだめだ、逃げちゃだめだ、逃げちゃだめだ、逃げちゃだめだ、逃げちゃだめだ！！！！", reactions:"" },
-      { direction:'left', usrIconURL:photo_shunji, text:"リアクションサンプル：", reactions:"" }
-    ];
-
     //render関数がaddEventListener(focus)で指定している関数よりも先に呼ばれたときに変数宣言がないとエラーになるので宣言だけしておく。
     // render関数の中でこの値が初期化されているかどうかでif文をかくべし
-    this.state = {messages:messages};
+    this.state = {messages:[]};
     this.socket = null;
     this.isSocketVerified = false;
     this.isSocketConnected = false;
@@ -38,9 +22,16 @@ export default class ChatView extends Component {
     this.init();
 
     // Room画面に遷移したときに実行される
-    const unsubscribe = props.navigation.addListener('focus', () => { this.init(); });
+    props.navigation.addListener('focus', () => { this.init(); });
+    
+    //Room画面を離れたときに実行される
+    props.navigation.addListener('beforeRemove', () => { this.backtoArchive(); });
 
     console.log("exit constructor() function");
+  }
+
+  componentWillUnmount(){
+    this.backtoArchive();
   }
   
 
@@ -109,16 +100,33 @@ export default class ChatView extends Component {
 
 
     // 最新の50件のメッセージを受け取る
+    var qs = require('qs');
     var send_msg_to_get_latest50msg = {
       userid : "id1",
       hashed_pass : "password01",
       room_id : this.state.roomID
     };
-    axios
-      .post('http://localhost/api/getLast50msg:3000', JSON.stringify(send_msg_to_get_latest50msg))
-      .then((res) => {
-        console.log(res.data);
-      }).catch(error => console.log(error));
+
+    fetch('http://localhost:3000/api/getLast50msg', {
+      method: 'POST',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(send_msg_to_get_latest50msg)
+    }).then((response) => response.json())
+    .then(  (responseJson) => {
+      this.state.messages = responseJson;
+      this.forceUpdate();
+    }).catch((error) => {
+      console.log("[ ERROR ] 直近の50件を表示")
+    });
+
+    // axios
+    //   .post('http://localhost:3000/api/getLast50msg', qs.stringify(send_msg_to_get_latest50msg))
+    //   .then((res) => {
+    //     console.log(res);
+    //   }).catch(error => console.log(error));
 
 
     // TODO最終的には以下のように実装する予定
@@ -194,6 +202,7 @@ export default class ChatView extends Component {
 
   // ルーム一覧画面に戻る
   backtoArchive(){
+    console.log("leaving room....")
     this.socket.emit('leave-room', JSON.stringify({'event':'leave-room', 'room':this.state.roomID, 'user':'000'}));
     this.socket.close();
 
@@ -210,17 +219,16 @@ export default class ChatView extends Component {
     // }
 
     this.socket.on('message', function(msg) {
-      console.log("ahaha " + msg);
-      const findresult = that.state.messages.some((u) => u.text === msg);
-      if (!findresult) {
-        that.state.messages.push({ direction:'left', usrIconURL:photo_qb,  text:msg, reactions:"" });
+      console.log("get new message!");
+      var j_msg = JSON.parse(msg);
+      // const findresult = that.state.messages.some((u) => u.text === msg);
+      // if (!findresult) {
+        that.state.messages.push({ direction:'left', usrIconURL:photo_qb,  text:j_msg.text, reactions:"" });
         that.setState({
         messages: that.state.messages,
         inputBarText: ''
         });
-      }
-      console.log("gehe");
-
+      // }
     });
 
     /* if(flag === 1){
@@ -285,7 +293,7 @@ class MessageBubble extends Component {
     if (this.props.direction === 'left'){
         return (
           <View style={{justifyContent: 'space-between', flexDirection: 'row'}}>
-              <Image source={this.props.userIconUrl} style={{ width: 50, height: 50 }} />
+              <Image source={{uri:this.props.userIconUrl}} style={{ width: 50, height: 50 }} />
               <View style={styles.messageBubbleTD}>
                 <View style={bubbleStyles}><Text style={bubbleTextStyle}>{this.props.text}</Text></View>
                 <Image source={{uri:"https://emoji.slack-edge.com/T01SUSMC3U7/iihanashi/21e4a4659a628f58.gif"}} style={{ width: 20, height: 20 }} />
@@ -301,7 +309,7 @@ class MessageBubble extends Component {
                 <View style={bubbleStyles}><Text style={bubbleTextStyle}>{this.props.text}</Text></View>
                 <Image source={{uri:"https://emoji.slack-edge.com/T01SUSMC3U7/iihanashi/21e4a4659a628f58.gif"}} style={{ width: 20, height: 20 }} />
               </View>
-            <Image source={this.props.userIconUrl} style={{ width: 50, height: 50 }} />
+            <Image source={{uri:this.props.userIconUrl}} style={{ width: 50, height: 50 }} />
           </View>
       );
     }
