@@ -12,7 +12,9 @@
     "react-native-autogrow-input": "^0.2.1",
     "react-native-elements": "^3.4.1",
     "react-native-gesture-handler": "^1.10.3",
+    "react-native-modal": "^11.10.0",
     "react-native-paper": "^4.8.1",
+    "react-native-popup-menu": "^0.15.10",
     "react-native-web": "~0.13.12",
     "socket.io-client": "^4.1.1"
   },

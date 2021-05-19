@@ -251,9 +251,7 @@ export default class ChatView extends Component {
                 <Text style={styles.backButton}>&lt; {this.state.noti}</Text>
           </TouchableHighlight>
               <Text style={styles.textTop}>{this.state.roomName}({this.state.members.length})</Text>
-            <TouchableHighlight>
-              <Image source={require("../../misc/front_end/chat_test/images/bell.png")} style={styles.bell}/>
-            </TouchableHighlight>
+            <TouchableHighlight><Icon name="bell" style={styles.bell}/></TouchableHighlight>
           </View>
           <KeyboardAvoidingView
               style={{ flex: 1 }}
@@ -330,7 +328,7 @@ class InputBar extends Component {
       <>
           <View style={styles.inputBar}>
             <TouchableHighlight>
-              <Image source={require("../../misc/front_end/chat_test/images/plus.png")} style={styles.plus}/>
+              <Icon name="plus" style={styles.plus}/>
             </TouchableHighlight>
             <AutogrowInput style={styles.textBox}
                         ref={(ref) => { this.autogrowInput = ref }} 

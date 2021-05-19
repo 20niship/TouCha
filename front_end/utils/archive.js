@@ -1,10 +1,21 @@
 import * as React from 'react';
 import 'react-native-gesture-handler';
-import { Text, View, Button, Image, StyleSheet, TouchableOpacity, ScrollView, KeyboardAvoidingView,AppRegistry, TextInput, TouchableHighlight, Keyboard } from 'react-native';
+import { Text, View, Button, Image, StyleSheet, TouchableOpacity, ScrollView, Modal, Pressable, TextInput, TouchableHighlight,  } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
+
+import { Overlay } from 'react-native-elements';
+
 // import MediaQuery from "react-responsive";
   
-export default  class Open_room extends React.Component{
+class Open_room extends React.Component{
+  constructor(props) {
+    super(props);
+    this.state = {
+      ModalVisivle : false,
+      newRoomText : ""
+    }
+  }
+
   render(){
     const { navigation } = this.props;
   const room_temp = [
@@ -46,16 +57,36 @@ export default  class Open_room extends React.Component{
         </TouchableOpacity >
       )
     })
-    
+
+    const ModalOverlayOn  = () => { this.setState({ ModalVisivle: true}) };
+    const ModalOverlayOff = () => {this.setState({ ModalVisivle: false}) };
+
     return( 
       <View>
         <View style={{flexDirection:"row", justifyContent:"space-between", marginTop:50, marginBottom:10}}>
         <View style={{width:40}}></View>
-          <Text style={{fontSize:25,marginLeft:10}}>オープンルーム</Text>
-          <TouchableHighlight style={{marginRight:20}}>
-          <Icon name="search" size={45} />
-          </TouchableHighlight>
+          <Text style={{fontSize:20,marginLeft:10}}>オープンルーム</Text>
+          <TouchableHighlight style={{width:20}} onPress={ModalOverlayOn} ><Icon name="plus" size={20} /></TouchableHighlight>
+          <TouchableHighlight style={{marginRight:20}}><Icon name="search" size={20} /></TouchableHighlight>
         </View>
+
+          {/* <Modal Visible={this.state.ModalVisivle} onBackdropPress={ModalOverlayOff}> */}
+          <Overlay isVisible={this.state.ModalVisivle} onBackdropPress={ModalOverlayOff}>
+            <Text>Create Room </Text>
+            <TextInput
+              style={{
+                width:300,
+                borderBottomWidth: 1,
+                borderBottomColor: "#ccc"
+              }}
+              onChangeText={(text) => this.setState({text})}
+              value={this.state.text}
+            />
+            <Text>{this.state.text}</Text>
+            <Button title="Create Room!" onPress={ModalOverlayOff}></Button>
+          </Overlay>
+      
+
         <ScrollView ref={(ref) => { this.scrollView = ref }} style={{height:630 //heightは機械によって変なことにならないよう変数で調整する
         }}>
           {room_list_ui}
@@ -65,6 +96,8 @@ export default  class Open_room extends React.Component{
   }
 }
 
+
+export default Open_room;
 
 
 /* ver 2
@@ -161,4 +194,49 @@ const styles = StyleSheet.create({
   messages:{
     backgroundColor:"white"
   },
+
+
+
+  // Modal example
+  centeredView: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    marginTop: 22
+  },
+  modalView: {
+    margin: 20,
+    backgroundColor: "white",
+    borderRadius: 20,
+    padding: 35,
+    alignItems: "center",
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5
+  },
+  button: {
+    borderRadius: 20,
+    padding: 10,
+    elevation: 2
+  },
+  buttonOpen: {
+    backgroundColor: "#F194FF",
+  },
+  buttonClose: {
+    backgroundColor: "#2196F3",
+  },
+  textStyle: {
+    color: "white",
+    fontWeight: "bold",
+    textAlign: "center"
+  },
+  modalText: {
+    marginBottom: 15,
+    textAlign: "center"
+  }
 })
