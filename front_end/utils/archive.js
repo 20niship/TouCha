@@ -1,8 +1,8 @@
 import * as React from 'react';
 import 'react-native-gesture-handler';
-import { Text, View, Button, Image, StyleSheet, TouchableOpacity, ScrollView, Modal, Pressable, TextInput, TouchableHighlight,  } from 'react-native';
+import { Text, View, Button, Image, StyleSheet, TouchableOpacity, ScrollView, TextInput, TouchableHighlight,  } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
-
+import Modal from 'modal-react-native-web';
 import { Overlay } from 'react-native-elements';
 
 // import MediaQuery from "react-responsive";
@@ -70,8 +70,8 @@ class Open_room extends React.Component{
           <TouchableHighlight style={{marginRight:20}}><Icon name="search" size={20} /></TouchableHighlight>
         </View>
 
-          {/* <Modal Visible={this.state.ModalVisivle} onBackdropPress={ModalOverlayOff}> */}
-          <Overlay isVisible={this.state.ModalVisivle} onBackdropPress={ModalOverlayOff}>
+          <Overlay ModalComponent={Modal} isVisible={this.state.ModalVisivle} onBackdropPress={ModalOverlayOff}>
+            {/* <Overlay isVisible={this.state.ModalVisivle} onBackdropPress={ModalOverlayOff}> */}
             <Text>Create Room </Text>
             <TextInput
               style={{
