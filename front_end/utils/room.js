@@ -119,7 +119,7 @@ export default class ChatView extends Component {
       this.state.messages = responseJson;
       this.forceUpdate();
     }).catch((error) => {
-      console.log("[ ERROR ] 直近の50件を表示")
+      console.log("[ ERROR ] ERROR server connection noe valid? ネットにつながってないかも")
     });
 
     // axios

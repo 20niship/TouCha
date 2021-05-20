@@ -134,16 +134,78 @@ app.post("/api/getLast50msg", function(req, res){
         // res.setHeader('Access-Control-Allow-Origin', 'http://localhost:3000')
         res.send(JSON.stringify(result));
     });
-
-    // mongo.connect(this.dbURL_mongo, (error, db) => {
-    //     this.mongodb_obj.collection(this.cl_chat).find({ room_id }).toArray((error, docs)=>{
-    //         for (var i = 0; i < 50; i++) {
-    //             res += docs[i].text;
-    //             console.log(docs[i].text);
-    //         }
-    //     });
-    // });    
 });
+
+
+
+app.post("/api/getRoomList", function(req, res){
+    if(!(req.body.hasOwnProperty("user_id")) && 
+        (req.body.hasOwnProperty("query")) && 
+        (req.body.hasOwnProperty("hashed_pass"))){
+            console.log("[ ERROR ]Syntax Error some key value is missing (createNewRoom)");
+            res.send(JSON.stringify({status:"error", description:"Syntax Error"}))
+            return;
+    }
+    var userid = req.body.user_id;
+    var pw = req.body.hashed_pass;
+
+    var dbObj = DBManager.getDB();
+    dbObj.collection("cl_users").find({ id : userid }).toArray((error, docs)=>{
+        if(docs.length === 0){
+            console.log("[ ERROR ] User Authentication Error -> " + userid);
+            res.send(JSON.stringify({status:"error", description:"Invalid user " + userid}))
+        }else{
+            try{
+                dbObj.collection("cl_rooms").insertOne(
+                    {id : "hoge", name:req.body.name, icon_name:null, lastmsg:null, status:"ok", type:req.body.type, user_list:[userid]},
+                )
+            }catch(e){
+                console.log("[ ERROR] Mongo DB Internal Server Error")
+                console.log(e);
+                res.send(JSON.stringify({status:"error", description:"Internal server error Mongo DB "}))
+                return;
+            }
+            console.log("New Room Creation Success!!")
+            res.send(JSON.stringify({status:"ok", description:"New Room created!!"}));
+        }
+    });
+})
+
+
+
+app.post("/api/createNewRoom", function(req, res){
+    if(!(req.body.hasOwnProperty("user_id")) && 
+        (req.body.hasOwnProperty("hashed_pass")) && 
+        (req.body.hasOwnProperty("name")) && 
+        (req.body.hasOwnProperty("type"))){
+            console.log("[ ERROR ]Syntax Error some key value is missing (createNewRoom)");
+            res.send(JSON.stringify({status:"error", description:"Syntax Error"}))
+            return;
+    }
+    var userid = req.body.user_id;
+    var pw = req.body.hashed_pass;
+
+    var dbObj = DBManager.getDB();
+    dbObj.collection("cl_users").find({ id : userid }).toArray((error, docs)=>{
+        if(docs.length === 0){
+            console.log("[ ERROR ] User Authentication Error -> " + userid);
+            res.send(JSON.stringify({status:"error", description:"Invalid user " + userid}))
+        }else{
+            try{
+                dbObj.collection("cl_rooms").insertOne(
+                    {id : "hoge", name:req.body.name, icon_name:null, lastmsg:null, status:"ok", type:req.body.type, user_list:[userid]},
+                )
+            }catch(e){
+                console.log("[ ERROR] Mongo DB Internal Server Error")
+                console.log(e);
+                res.send(JSON.stringify({status:"error", description:"Internal server error Mongo DB "}))
+                return;
+            }
+            console.log("New Room Creation Success!!")
+            res.send(JSON.stringify({status:"ok", description:"New Room created!!"}));
+        }
+    });
+})
 
 
 app.post("/api/getInfo", function(req, res){
@@ -164,7 +226,6 @@ app.post("/api/getInfo", function(req, res){
         result = docs[0].msgs;
         res.send(JSON.stringify(result));
     });
-
 })
 
 

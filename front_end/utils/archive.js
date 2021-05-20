@@ -4,7 +4,7 @@ import { Text, View, Button, Image, StyleSheet, TouchableOpacity, ScrollView, Te
 import Icon from 'react-native-vector-icons/FontAwesome';
 import Modal from 'modal-react-native-web';
 import { Overlay } from 'react-native-elements';
-
+import { RadioButton } from 'react-native-paper';
 // import MediaQuery from "react-responsive";
   
 class Open_room extends React.Component{
@@ -12,8 +12,37 @@ class Open_room extends React.Component{
     super(props);
     this.state = {
       ModalVisivle : false,
-      newRoomText : ""
+      newRoomName : "新規ルーム",
+      newRoomType : "Open"
     }
+  }
+
+
+  createNewRoom(){
+    console.log("New Room Create!!");
+    console.log(this.state);
+
+    this.setState({ ModalVisivle: false}) // close modal
+
+    fetch('http://localhost:3000/api/createNewRoom', {
+      method: 'POST',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({user_id: "id1", hashed_pass:"password01", name: this.state.newRoomName, type:this.state.newRoomType })
+    }).then((response) => response.json())
+    .then(  (responseJson) => {
+      if(responseJson.status = "ok"){
+        console.log("Roomが正しく作成された！")
+      }else{
+        console.log("Error!!!");
+      }
+      
+      this.forceUpdate(); //画面再レンダリング
+    }).catch((error) => {
+      console.log("[ ERROR ]サーバーと正常に通信できませんでした (createNewRoom)")
+    });
   }
 
   render(){
@@ -60,6 +89,8 @@ class Open_room extends React.Component{
 
     const ModalOverlayOn  = () => { this.setState({ ModalVisivle: true}) };
     const ModalOverlayOff = () => {this.setState({ ModalVisivle: false}) };
+    const setNewRoomTypeChecked = (ff) => {this.setState({ newRoomType: ff}) };
+    const __createNewRoom = () => {this.createNewRoom() };
 
     return( 
       <View>
@@ -77,13 +108,38 @@ class Open_room extends React.Component{
               style={{
                 width:300,
                 borderBottomWidth: 1,
-                borderBottomColor: "#ccc"
+                borderBottomColor: "#ccc",
+                margin:15
               }}
-              onChangeText={(text) => this.setState({text})}
-              value={this.state.text}
+              onChangeText={(text) => this.setState({newRoomName : text})}
+              placeholder ={this.state.newRoomName}
             />
-            <Text>{this.state.text}</Text>
-            <Button title="Create Room!" onPress={ModalOverlayOff}></Button>
+
+            <View style={{ flexDirection: 'row', justifyContent: 'center'}}>
+              
+              <RadioButton
+                value="Open"
+                status={ this.state.newRoomType === 'Open' ? 'checked' : 'unchecked' }
+                onPress={() => setNewRoomTypeChecked('Open')}
+              /><Text>Open Room</Text>
+              <RadioButton
+                value="Register"
+                status={  this.state.newRoomType === 'Register' ? 'checked' : 'unchecked' }
+                onPress={() => setNewRoomTypeChecked('Register')}
+              /><Text>制限ルーム</Text>
+            </View>
+
+            
+            <Text style={{margin:10}}>「{this.state.newRoomName}」を作成します、、、</Text>
+
+            <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}>
+                <TouchableHighlight onPress={ __createNewRoom } activeOpacity={0.2}>
+                  <View  style={{margin:10, width:140, height:30, backgroundColor: '#5555ff', justifyContent: 'center',alignItems: 'center',borderRadius: 10,shadowColor: '#000',shadowOffset: { width: 2, height: 2 },shadowOpacity: 0.8,shadowRadius: 2}}><Text>Create Room</Text></View>
+                </TouchableHighlight>
+                <TouchableHighlight onPress={ ModalOverlayOff } activeOpacity={0.2}>
+                  <View style={{margin:10, width:140, height:30, backgroundColor: '#bbbbbb',justifyContent: 'center',alignItems: 'center',borderRadius: 10,shadowColor: '#000',shadowOffset: { width: 2, height: 2 },shadowOpacity: 0.8,shadowRadius: 2}}><Text>  Cancel  </Text></View>
+                </TouchableHighlight>
+            </View>
           </Overlay>
       
 
