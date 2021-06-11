@@ -284,7 +284,7 @@ socket.on('login', function(msg){
     });
 
 
-    socket.on('message',function(msg){
+    socket.on('send-message',function(msg){
         var msg_parsed = JSON.parse(msg);
         console.log("get new message!");
         console.log(msg_parsed);
@@ -296,17 +296,27 @@ socket.on('login', function(msg){
                 console.log("[ ERROR ] no such room id = " + msg_parsed.room_id );
                 return false
             }
-            sock_users.printAllUsers();
 
-            (res[0].user_list).forEach(us => {
-                sock_list_tmp = sock_users.getSockInfoList(us);
-                sock_list_tmp.forEach(slt => {
-                    if(slt.sockObj !== socket){
-                        slt.sockObj.emit("message", JSON.stringify(msg_parsed));
-                        console.log("send message to  --> " + us);
-                    }
-                });
-            });
+            console.log(res);
+
+            sock_users.printAllUsers();
+            
+            (sock_users.user_list).forEach(ss => {
+                if(res[0].user_list.includes(ss.user_id)){
+                    ss.sockObj.emit("get-message", JSON.stringify(msg_parsed));
+                    console.log("send message to  --> " + ss.user_id);
+                }
+            })
+
+            // (res[0].user_list).forEach(us => {
+            //     sock_list_tmp = sock_users.getSockInfoList(us);
+            //     sock_list_tmp.forEach(slt => {
+            //         if(slt.sockObj !== socket){
+            //             slt.sockObj.emit("message", JSON.stringify(msg_parsed));
+            //             console.log("send message to  --> " + us);
+            //         }
+            //     });
+            // });
             console.log("end");
         });
 

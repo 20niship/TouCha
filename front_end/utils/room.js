@@ -153,7 +153,7 @@ export default class ChatView extends Component {
       'ts' : new Date().getTime() // タイムスタンプ　https://wiki.aleen42.com/qa/timestamp.html
     }
     console.log(send_msg);
-    this.state.hSock.socket.emit('message', JSON.stringify(send_msg));
+    this.state.hSock.socket.emit('send-message', JSON.stringify(send_msg));
     
     this.state.messages.push({ direction:'right', usrIconURL:"https://pbs.twimg.com/profile_images/1264490158121869313/maQmeRbN_400x400.jpg",  text: this.state.inputBarText, reactions:"" });
 
@@ -196,16 +196,21 @@ export default class ChatView extends Component {
     //   this.init();
     // }
 
-    this.state.hSock.socket.on('message', function(msg) {
+    this.state.hSock.socket.on('get-message', function(msg) {
       console.log("get new message!");
       var j_msg = JSON.parse(msg);
+      if(j_msg.room_id === that.state.roomID){
+          that.state.messages.push({ direction:'left', usrIconURL:"https://pbs.twimg.com/profile_images/1264490158121869313/maQmeRbN_400x400.jpg",  text:j_msg.text, reactions:"" });
+          that.setState({
+          messages: that.state.messages,
+          inputBarText: ''
+          });
+      }else{
+        console.log("他のルームにめっせが送信された");
+        //TODO 通知
+      }
       // const findresult = that.state.messages.some((u) => u.text === msg);
       // if (!findresult) {
-        that.state.messages.push({ direction:'left', usrIconURL:"https://pbs.twimg.com/profile_images/1264490158121869313/maQmeRbN_400x400.jpg",  text:j_msg.text, reactions:"" });
-        that.setState({
-        messages: that.state.messages,
-        inputBarText: ''
-        });
       // }
     });
 
