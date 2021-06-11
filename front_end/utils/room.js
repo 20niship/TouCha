@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import { Text, View, Image, StyleSheet, ScrollView, KeyboardAvoidingView, TextInput, TouchableHighlight, TouchableOpacity, Keyboard } from 'react-native';
 import AutogrowInput from 'react-native-autogrow-input';
-import io from "socket.io-client";
 import Icon from 'react-native-vector-icons/FontAwesome';
 
 import axios from 'axios'; // POST通信で使用
@@ -9,13 +8,13 @@ import axios from 'axios'; // POST通信で使用
 // before : io('https://acbc591940e9.ngrok.io', {transports: ['websocket']} );
 // const socket = io("http://localhost:3000", {transports: ['websocket']} );
 
+
 export default class ChatView extends Component {
   constructor(props) {
     super(props);
     //render関数がaddEventListener(focus)で指定している関数よりも先に呼ばれたときに変数宣言がないとエラーになるので宣言だけしておく。
     // render関数の中でこの値が初期化されているかどうかでif文をかくべし
     this.state = {messages:[]};
-    this.socket = null;
     this.isSocketVerified = false;
     this.isSocketConnected = false;
 
@@ -40,39 +39,6 @@ export default class ChatView extends Component {
   // title: 'Chat',
   // };
 
-  async trySocketVerification(){
-    console.log("ユーザー認証実施中、、、、")
-    var send_msg = {
-      'event':'login',
-      'userid':'id2',
-      'room_id':this.state.roomID,
-      'hashed_pass' : 'password02',
-      'ts' : new Date().getTime() // タイムスタンプ　https://wiki.aleen42.com/qa/timestamp.html
-    }
-
-    this.socket.on('login-verify', (msg)=>{
-      if(msg == "login-accepted"){
-        this.isSocketVerified = true;
-        console.log("User authenticated");
-        return true;
-      }else{
-        alert("ユーザー認証に失敗しました。ルームに参加していない可能性があります");
-        this.backtoArchive();
-      }
-    });
-
-
-    // for (let step = 0; step < 2; step++) {
-      this.socket.emit('login', JSON.stringify(send_msg));
-      
-      // await sleep(500);
-
-      console.log("authentication trying.....");
-      // if(this.isSocketVerified){
-      //   return true;
-      // }
-    // }
-  }
 
   init(){
     this.state.noti = 6;
@@ -83,24 +49,36 @@ export default class ChatView extends Component {
     this.isSocketVerified = false;
     this.isSocketConnected = false;
 
-    try{
-      this.socket = io("http://localhost:3000", {transports: ['websocket']} );
-    }catch{
-      console.log("ソケットの接続に失敗しました。インターネットにつながっていない可能性があります")
-    }
-   
     // ------------------------------  ソケット通信をユーザーでログインしてVerifyする  --------------------------------
-
     const myparams  = this.props.route.params;
     this.state.roomName = myparams.roomid;
     this.state.roomID = myparams.roomid;
+    this.state.hSock = myparams.hSock;
 
-    this.trySocketVerification();
-    this.isSocketVerified = true;
+    // Socket check
+    fetch('http://localhost:3000/api/getRoomList', {
+      method: 'POST',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({user_id:"id1"})
+    }).then((response) => response.json())
+    .then(  (responseJson) => {
+      var rooms = responseJson.room_list;
+      if(!rooms.includes(this.state.roomID)){
+        console.log("このルームにはユーザーがVerifyされていないので全体画面に戻る")
+        this.backtoArchive();
+      }else{
+        console.log("ルーム内のUser認証完了")
+      }
+    }).catch((error) => {
+      console.log(error);
+      console.log("[ ERROR ] ERROR server connection noe valid? ネットにつながってないかも")
+    });
 
 
     // 最新の50件のメッセージを受け取る
-    var qs = require('qs');
     var send_msg_to_get_latest50msg = {
       userid : "id1",
       hashed_pass : "password01",
@@ -119,6 +97,7 @@ export default class ChatView extends Component {
       this.state.messages = responseJson;
       this.forceUpdate();
     }).catch((error) => {
+      console.log(error);
       console.log("[ ERROR ] ERROR server connection noe valid? ネットにつながってないかも")
     });
 
@@ -174,7 +153,7 @@ export default class ChatView extends Component {
       'ts' : new Date().getTime() // タイムスタンプ　https://wiki.aleen42.com/qa/timestamp.html
     }
     console.log(send_msg);
-    this.socket.emit('message', JSON.stringify(send_msg));
+    this.state.hSock.socket.emit('message', JSON.stringify(send_msg));
     
     this.state.messages.push({ direction:'right', usrIconURL:"https://pbs.twimg.com/profile_images/1264490158121869313/maQmeRbN_400x400.jpg",  text: this.state.inputBarText, reactions:"" });
 
@@ -203,8 +182,7 @@ export default class ChatView extends Component {
   // ルーム一覧画面に戻る
   backtoArchive(){
     console.log("leaving room....")
-    this.socket.emit('leave-room', JSON.stringify({'event':'leave-room', 'room':this.state.roomID, 'user':'000'}));
-    this.socket.close();
+    this.state.hSock.socket.emit('leave-room', JSON.stringify({'event':'leave-room', 'room':this.state.roomID, 'user':'000'}));
 
     const { navigation } = this.props;
     navigation.navigate("OpenRoom");
@@ -214,11 +192,11 @@ export default class ChatView extends Component {
     // ------------------------- ルームの設定 ----------------------------------------
     var messages = [];
     var that = this;
-    // while(this.socket == null){
+    // while(this.hsock.socket == null){
     //   this.init();
     // }
 
-    this.socket.on('message', function(msg) {
+    this.state.hSock.socket.on('message', function(msg) {
       console.log("get new message!");
       var j_msg = JSON.parse(msg);
       // const findresult = that.state.messages.some((u) => u.text === msg);

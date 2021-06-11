@@ -5,15 +5,25 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 import Modal from 'modal-react-native-web';
 import { Overlay } from 'react-native-elements';
 import { RadioButton } from 'react-native-paper';
+import io from "socket.io-client";
+
 // import MediaQuery from "react-responsive";
+
+import socketHandler    from '../proc/socket'
+
   
 class Open_room extends React.Component{
   constructor(props) {
     super(props);
+
+    // socket setup
+    this.hSock = new socketHandler();
+    this.hSock.createNew();
+  
     this.state = {
       ModalVisivle : false,
-      newRoomName : "新規ルーム",
-      newRoomType : "Open"
+      newRoomName : "none",
+      newRoomType : "Open",
     }
   }
 
@@ -69,11 +79,11 @@ class Open_room extends React.Component{
     flex: 1,
   };
   
-  room_temp.forEach(function(room, index){
+  room_temp.forEach( (room, index) => {
     room_list_ui.push(
       //特定のルームに移動する頃はできていないので調整必要
       <TouchableOpacity onPress={() => { 
-        navigation.navigate("Room", {roomid : room.id}); 
+        navigation.navigate("Room", {roomid : room.id, hSock:this.hSock}); 
       }} 
         style={{ justifyContent: 'space-between', flexDirection: 'row', height:80}}>
           <View style={{width:50, height:50, marginLeft:20,marginTop:20}}>

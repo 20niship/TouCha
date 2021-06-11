@@ -8,6 +8,8 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createMaterialBottomTabNavigator } from '@react-navigation/material-bottom-tabs';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Icon from 'react-native-vector-icons/FontAwesome';
+import io from "socket.io-client";
+
 
 // // import * from 'ui-utils.js'  // 最終的にはこういう感じで別ファイルに分けるべき
 // // npm install --save @fortawesome/fontawesome-free でアイコンフォントをインストールする必要があ
@@ -22,6 +24,7 @@ import Profile from './utils/profile'
 import Setting from './utils/setting'
 import Archive from './utils/archive'
 import Room    from './utils/room'
+import socketHandler    from './proc/socket'
 
 export default function App() {
   var bar_options = {

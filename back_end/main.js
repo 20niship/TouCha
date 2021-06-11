@@ -109,8 +109,10 @@ app.get('/', function (req, res) {
   res.send("Hello world!!");
 });
 
+//TODO:
+//今はてすとようにapp.allにしてしているが（Get、Post両方ともOK）、今後はpostのみに変更する
 
-app.post("/api/getLast50msg", function(req, res){
+app.all("/api/getLast50msg", function(req, res){
     if(!req.body.hasOwnProperty("room_id")){
         console.log("No argument room_id");
         res.send(JSON.stringify({status:"error", description:"No argument-room_id"}))
@@ -138,42 +140,44 @@ app.post("/api/getLast50msg", function(req, res){
 
 
 
-app.post("/api/getRoomList", function(req, res){
-    if(!(req.body.hasOwnProperty("user_id")) && 
-        (req.body.hasOwnProperty("query")) && 
-        (req.body.hasOwnProperty("hashed_pass"))){
-            console.log("[ ERROR ]Syntax Error some key value is missing (createNewRoom)");
-            res.send(JSON.stringify({status:"error", description:"Syntax Error"}))
-            return;
+app.all("/api/getRoomList", function(req, res){
+    var userid, pw;
+    if(req.method === "POST"){
+        if(!(req.body.hasOwnProperty("user_id"))){
+                console.log("[ ERROR ]Syntax Error some key value is missing (createNewRoom)");
+                res.send(JSON.stringify({status:"error", description:"Syntax Error"}))
+                return;
+        }
+        userid = req.body.user_id;
+    }else{
+        userid = req.query.user_id;
+        pw = req.query.hashed_pass;
     }
-    var userid = req.body.user_id;
-    var pw = req.body.hashed_pass;
+
+    console.log(userid);
 
     var dbObj = DBManager.getDB();
-    dbObj.collection("cl_users").find({ id : userid }).toArray((error, docs)=>{
+
+    dbObj.collection("cl_rooms").find({ user_list: {"$in" : [userid]}}).toArray((error, docs)=>{
         if(docs.length === 0){
-            console.log("[ ERROR ] User Authentication Error -> " + userid);
-            res.send(JSON.stringify({status:"error", description:"Invalid user " + userid}))
-        }else{
-            try{
-                dbObj.collection("cl_rooms").insertOne(
-                    {id : "hoge", name:req.body.name, icon_name:null, lastmsg:null, status:"ok", type:req.body.type, user_list:[userid]},
-                )
-            }catch(e){
-                console.log("[ ERROR] Mongo DB Internal Server Error")
-                console.log(e);
-                res.send(JSON.stringify({status:"error", description:"Internal server error Mongo DB "}))
-                return;
-            }
-            console.log("New Room Creation Success!!")
-            res.send(JSON.stringify({status:"ok", description:"New Room created!!"}));
+            console.log("[ ERROR ] No Room for User -> " + userid);
+            // res.send(JSON.stringify({status:"error", description:"Invalid user " + userid}))
         }
+        
+        var result = [];
+        docs.forEach(r => {
+            result.push(r.id);
+        });
+        console.log(JSON.stringify({room_list:result}));
+        res.send(JSON.stringify({room_list:result}));
+        // res.send(JSON.stringify(docs));
+
     });
 })
 
 
 
-app.post("/api/createNewRoom", function(req, res){
+app.all("/api/createNewRoom", function(req, res){
     if(!(req.body.hasOwnProperty("user_id")) && 
         (req.body.hasOwnProperty("hashed_pass")) && 
         (req.body.hasOwnProperty("name")) && 
@@ -208,7 +212,7 @@ app.post("/api/createNewRoom", function(req, res){
 })
 
 
-app.post("/api/getInfo", function(req, res){
+app.all("/api/getInfo", function(req, res){
     if(!req.body.hasOwnProperty("room_id")){
         console.log("No argument room_id");
         res.send(JSON.stringify({status:"error", description:"No argument-room_id"}))
@@ -246,23 +250,26 @@ socket.on('login', function(msg){
             return;
         }else{
             console.log("User Found!!");
-            dbObj.collection("cl_rooms").find({ id : message.room_id }).toArray((error, res)=>{
-                if(res.length == 0){
-                    console.log("no such room id = " + message.room_id );
-                    socket.emit("login-verify", "login-deny");
-                    sock_users.addUser_room_type(socket, message.userid, message.room_id, false);
-                    return false
-                }
-                console.log(res[0].user_list);
-                if(res[0].user_list.includes(message.userid)){
-                    console.log("User is in room!!")
-                    socket.emit("login-verify", "login-accepted");
-                    sock_users.addUser_room_type(socket, message.userid, message.room_id, true);
-                }else{
-                    console.log("user not in room!!");
-                    sock_users.addUser_room_type(socket, message.userid, message.room_id, false);
-                }
-            });
+            socket.emit("login-verify", "login-accepted");
+            sock_users.addUser_room_type(socket, message.userid, message.room_id, true);
+
+            // ルーム内にそのユーザーがいるかチェック
+            // dbObj.collection("cl_rooms").find({ id : message.room_id }).toArray((error, res)=>{
+            //     if(res.length == 0){
+            //         console.log("no such room id = " + message.room_id );
+            //         socket.emit("login-verify", "login-deny");
+            //         sock_users.addUser_room_type(socket, message.userid, message.room_id, false);
+            //         return false
+            //     }
+            //     console.log(res[0].user_list);
+            //     if(res[0].user_list.includes(message.userid)){
+            //         console.log("User is in room!!")
+            //         socket.emit("login-verify", "login-accepted");
+            //         sock_users.addUser_room_type(socket, message.userid, message.room_id, true);
+            //     }else{
+            //         console.log("user not in room!!");
+            //     }
+            // });
         }
     });
 
@@ -272,7 +279,7 @@ socket.on('login', function(msg){
 
     socket.on("leave-room", (msg) => {
         console.log("leave room!!! --> ");
-        sock_users.deleteUser(socket);
+        // sock_users.deleteUser(socket);
         // TODO : chat_socket_list.delete(hoge)
     });
 
