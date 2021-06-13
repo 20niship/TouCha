@@ -172,30 +172,11 @@ class Open_room extends React.Component{
       flexDirection:'column',
       flex: 1
     },
-    header: {
-      //position: 'relative',
-      top: 0,
-      left: 0,
-      right: 0,
-      backgroundColor: '#03A9F4',
-      overflow: 'hidden',
-    },    
-    backgroundImage: {
-      position: 'absolute',
-      top: 0,
-      left: 0,
-      right: 0,
-      width: null,
-      height: HEADER_MAX_HEIGHT,
-      resizeMode: 'cover',
-    },
+
     messages:{
       backgroundColor:"white"
     },
   })
-  const HEADER_MAX_HEIGHT = 200;
-  const HEADER_MIN_HEIGHT = 60;
-  const HEADER_SCROLL_DISTANCE = HEADER_MAX_HEIGHT - HEADER_MIN_HEIGHT;
 
 /*class Chat_Room extends React.Component{
     render(){
@@ -215,37 +196,15 @@ updateSearch = (search) => {
 };
 */
 class Room extends React.Component{
-  constructor(props) {
-    super(props);
-    
-    this.state = {
-      scrollY: new Animated.Value(0),
-      search: '',
-    };
-  } 
-  
+  state = {
+    search: '',
+  };
+
   updateSearch = (search) => {
     this.setState({ search });
   };
-  
+
   render(){
-    
-    const imageOpacity = this.state.scrollY.interpolate({
-      inputRange: [0, HEADER_SCROLL_DISTANCE / 2, HEADER_SCROLL_DISTANCE],
-      outputRange: [1, 1, 0],
-      extrapolate: 'clamp',
-    });
-    const imageTranslate = this.state.scrollY.interpolate({
-      inputRange: [0, HEADER_SCROLL_DISTANCE],
-      outputRange: [0, -50],
-      extrapolate: 'clamp',
-    });
-    const headerHeight = this.state.scrollY.interpolate({
-      inputRange: [0, HEADER_SCROLL_DISTANCE],
-      outputRange: [HEADER_MAX_HEIGHT, HEADER_MIN_HEIGHT],
-      extrapolate: 'clamp',
-    });
-    
     const { search } = this.state;
       const { navigation } = this.props;
       const room_temp = [
@@ -279,7 +238,7 @@ class Room extends React.Component{
         room_list_ui.push(
           //特定のルームに移動する頃はできていないので調整必要
           
-          <TouchableOpacity onPress={() => { navigation.navigate("Room"); }} style={{ justifyContent: 'space-between', flexDirection: 'row', height:80,}}>
+          <TouchableOpacity onPress={() => { navigation.navigate("Room"); }} style={{ justifyContent: 'space-between', flexDirection: 'row', height:80 }}>
               <View style={{width:50, height:50, marginLeft:20,marginTop:20}}>
               <IconTest icon={room.icon_name} fontSize={45}/>
               </View>
@@ -287,12 +246,12 @@ class Room extends React.Component{
                 <Text style={{ fontSize: 18 }}>{room.name}</Text>
                 <Text style={{ fontSize: 14, color:"darkgray" }}>{room.lastmsg}</Text>
               </View>
-          </TouchableOpacity >
+            </TouchableOpacity >
           )
         })
         
         return( 
-          <View style={{backgroundColor:"white",flex:1}}>
+          <View style={{backgroundColor:"white",}}>
             <View style={{flexDirection:"row", justifyContent:"space-between", marginTop:50,}}>
               <View style={{width:40}}></View>
               <Text style={{fontSize:25,marginLeft:10}}>ルーム</Text>
@@ -301,32 +260,29 @@ class Room extends React.Component{
                 <IconTest icon="plus-circle" fontSize={25} /> 
               </TouchableHighlight>
             </View>
-            <Animated.View style={styles.header,{height: headerHeight}}>
-              <View style={{alignItems: 'center',justifyContent: 'center',}}>
-                <SearchBar
-                  placeholder="検索"
-                  onChangeText={this.updateSearch}
-                  value={search}
-                  platform="ios" //iosとアンドロイドで変える
-                  style={[{
-                    //opacity: imageOpacity, transform: [{translateY: imageTranslate}]
-                  }]}
-                />
-              </View>
-              <Animated.View>
-    
-              </Animated.View>
+            <Animated.View
+              style={[
+                styles.box,
+                {
+                  transform: [{
+                    translateY: Animated.diffClamp( Animated.multiply(scrollY, -1), -60, 0)
+                  }],
+                },
+              ]}
+            >
+            <SearchBar
+              placeholder="検索"
+              onChangeText={this.updateSearch}
+              value={search}
+              platform="ios" //iosとアンドロイドで変える
+              style={{
+                margin:0
+              }}
+            />
             </Animated.View>
-            <ScrollView 
-            scrollEventThrottle={16}
-            onScroll={Animated.event(
-              [{nativeEvent: {contentOffset: {y: this.state.scrollY}}}]
-            )}
-            ref={(ref) => { this.scrollView = ref }} style={{height:570, //heightは機械によって変なことにならないよう変数で調整する
-            flex:1}}>
-              <View style={{marginTop: HEADER_MAX_HEIGHT}}>
+            <ScrollView ref={(ref) => { this.scrollView = ref }} style={{height:570 //heightは機械によって変なことにならないよう変数で調整する
+            }}> 
               {room_list_ui}  
-              </View>
             </ScrollView>
           </View>
         );
@@ -430,70 +386,3 @@ export default function App() {
     </NavigationContainer>
   );
 }
-
-/*import React from 'react';
-import {Animated, StyleSheet, Text, ScrollView, Dimensions} from 'react-native';
-
-const TestScreen = () => {
-  const scrollY = React.useRef(new Animated.Value(0)).current;
-
-  return (
-    <>
-      <Animated.View
-        style={[
-          styles.box,
-          {
-            transform: [{
-              translateY: Animated.diffClamp( Animated.multiply(scrollY, -1), -60, 0)
-            }],
-          },
-        ]}
-      >
-        <Text style={styles.text}>ロゴ</Text>
-      </Animated.View>
-      <ScrollView
-        contentContainerStyle={{ marginTop: 60 }}
-        scrollEventThrottle={16}
-        onScroll={Animated.event(
-          [{ nativeEvent: { contentOffset: { y: scrollY } } }],
-          {
-            useNativeDriver: false,
-          },
-        )}
-      >
-        <Text style={styles.text}>
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-          eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad
-          minim veniam, quis nostrud exercitation ullamco laboris nisi ut
-          aliquip ex ea commodo consequat. Duis aute irure dolor in
-          reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla
-          pariatur. Excepteur sint occaecat cupidatat non proident, sunt in
-          culpa qui officia deserunt mollit anim id est laborum.
-        </Text>
-      </ScrollView>
-    </>
-  );
-}
-
-const { width } = Dimensions.get('window');
-
-const styles = StyleSheet.create({
-  box: {
-    position: 'absolute',
-    top: 0,
-    right: 0,
-    zIndex: 10,
-    backgroundColor: '#FFF',
-    height: 60,
-    width: width,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  text: {
-    fontSize: 42,
-    fontWeight: 'bold',
-  },
-});
-
-export default TestScreen;
-*/
