@@ -1,4 +1,5 @@
 const mongo = require('mongodb').MongoClient;
+const mysql = require('mysql');
 
 // Suppose the chat messages are in BSON format below and inserted into collection named "messages":
 // "event": {
