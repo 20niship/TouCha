@@ -4,6 +4,7 @@ import AutogrowInput from 'react-native-autogrow-input';
 import Icon from 'react-native-vector-icons/FontAwesome';
 
 import axios from 'axios'; // POST通信で使用
+import {NavigationFooter} from './utils'
 
 // before : io('https://acbc591940e9.ngrok.io', {transports: ['websocket']} );
 // const socket = io("http://localhost:3000", {transports: ['websocket']} );
@@ -24,7 +25,7 @@ export default class ChatView extends Component {
     props.navigation.addListener('focus', () => { this.init(); });
     
     //Room画面を離れたときに実行される
-    props.navigation.addListener('beforeRemove', () => { this.backtoArchive(); });
+    // props.navigation.addListener('beforeRemove', () => { this.backtoArchive(); });
 
     console.log("exit constructor() function");
   }
@@ -226,8 +227,12 @@ export default class ChatView extends Component {
         );
     });
 
-    return (
+    const nav =(str, params) => {
+      alert(str);
+      this.props.navigation.navigate(str, params);
+    }
 
+    return (
       <View style={styles.outer}>
           <View style={styles.topBar}>
           <TouchableHighlight onPress={() => { this.backtoArchive(); }} >
@@ -259,7 +264,9 @@ export default class ChatView extends Component {
             </TouchableOpacity>
           {/* <KeyboardSpacer/>              */}
           </KeyboardAvoidingView>
-          <View style={styles.bottom}></View>
+          <View style={styles.bottom}>
+            {<NavigationFooter nav={nav}/>}
+          </View>
       </View>
     );
   }

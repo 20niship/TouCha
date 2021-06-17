@@ -6,11 +6,11 @@ import Modal from 'modal-react-native-web';
 import { Overlay } from 'react-native-elements';
 import { RadioButton } from 'react-native-paper';
 import io from "socket.io-client";
+import {NavigationFooter} from './utils'
 
 // import MediaQuery from "react-responsive";
 
 import socketHandler    from '../proc/socket'
-
   
 class Open_room extends React.Component{
   constructor(props) {
@@ -20,11 +20,7 @@ class Open_room extends React.Component{
     this.hSock = new socketHandler();
     this.hSock.createNew();
   
-    this.state = {
-      ModalVisivle : false,
-      newRoomName : "none",
-      newRoomType : "Open",
-    }
+    this.state = { };
   }
 
 
@@ -97,66 +93,26 @@ class Open_room extends React.Component{
       )
     })
 
-    const ModalOverlayOn  = () => { this.setState({ ModalVisivle: true}) };
-    const ModalOverlayOff = () => {this.setState({ ModalVisivle: false}) };
-    const setNewRoomTypeChecked = (ff) => {this.setState({ newRoomType: ff}) };
-    const __createNewRoom = () => {this.createNewRoom() };
+    const __createNewRoom = () => { navigation.navigate("createNewRoom", { hSock:this.hSock }); };
+    const nav =(str, params) => { this.props.navigation.navigate(str, params); }
 
     return( 
       <View>
         <View style={{flexDirection:"row", justifyContent:"space-between", marginTop:50, marginBottom:10}}>
         <View style={{width:40}}></View>
           <Text style={{fontSize:20,marginLeft:10}}>オープンルーム</Text>
-          <TouchableHighlight style={{width:20}} onPress={ModalOverlayOn} ><Icon name="plus" size={20} /></TouchableHighlight>
+          <TouchableHighlight style={{width:20}} onPress={__createNewRoom} ><Icon name="plus" size={20} /></TouchableHighlight>
           <TouchableHighlight style={{marginRight:20}}><Icon name="search" size={20} /></TouchableHighlight>
         </View>
-
-          <Overlay ModalComponent={Modal} isVisible={this.state.ModalVisivle} onBackdropPress={ModalOverlayOff}>
-            {/* <Overlay isVisible={this.state.ModalVisivle} onBackdropPress={ModalOverlayOff}> */}
-            <Text>Create Room </Text>
-            <TextInput
-              style={{
-                width:300,
-                borderBottomWidth: 1,
-                borderBottomColor: "#ccc",
-                margin:15
-              }}
-              onChangeText={(text) => this.setState({newRoomName : text})}
-              placeholder ={this.state.newRoomName}
-            />
-
-            <View style={{ flexDirection: 'row', justifyContent: 'center'}}>
-              
-              <RadioButton
-                value="Open"
-                status={ this.state.newRoomType === 'Open' ? 'checked' : 'unchecked' }
-                onPress={() => setNewRoomTypeChecked('Open')}
-              /><Text>Open Room</Text>
-              <RadioButton
-                value="Register"
-                status={  this.state.newRoomType === 'Register' ? 'checked' : 'unchecked' }
-                onPress={() => setNewRoomTypeChecked('Register')}
-              /><Text>制限ルーム</Text>
-            </View>
-
-            
-            <Text style={{margin:10}}>「{this.state.newRoomName}」を作成します、、、</Text>
-
-            <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}>
-                <TouchableHighlight onPress={ __createNewRoom } activeOpacity={0.2}>
-                  <View  style={{margin:10, width:140, height:30, backgroundColor: '#5555ff', justifyContent: 'center',alignItems: 'center',borderRadius: 10,shadowColor: '#000',shadowOffset: { width: 2, height: 2 },shadowOpacity: 0.8,shadowRadius: 2}}><Text>Create Room</Text></View>
-                </TouchableHighlight>
-                <TouchableHighlight onPress={ ModalOverlayOff } activeOpacity={0.2}>
-                  <View style={{margin:10, width:140, height:30, backgroundColor: '#bbbbbb',justifyContent: 'center',alignItems: 'center',borderRadius: 10,shadowColor: '#000',shadowOffset: { width: 2, height: 2 },shadowOpacity: 0.8,shadowRadius: 2}}><Text>  Cancel  </Text></View>
-                </TouchableHighlight>
-            </View>
-          </Overlay>
-      
 
         <ScrollView ref={(ref) => { this.scrollView = ref }} style={{height:630 //heightは機械によって変なことにならないよう変数で調整する
         }}>
           {room_list_ui}
         </ScrollView>
+
+        <View style={{height:40}}>
+            <NavigationFooter nav={nav}/>
+        </View>
       </View>
     );
   }
