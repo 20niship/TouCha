@@ -28,6 +28,9 @@ node_modules/
 *.pem
 *.zip
 
+yarn.lock
+*.lock
+
 *.class
 
 # Mobile Tools for Java (J2ME)
