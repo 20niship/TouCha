@@ -9,6 +9,7 @@ import { createMaterialBottomTabNavigator } from '@react-navigation/material-bot
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import io from "socket.io-client";
+import * as Notifications from 'expo-notifications';
 
 import { createStackNavigator } from '@react-navigation/stack';
 const Stack = createStackNavigator();
@@ -29,8 +30,19 @@ import Room    from './utils/room'
 import socketHandler    from './proc/socket'
 import CreateRoom from './utils/createRoom'
 
+const requestPermissionsAsync = async () => {
+  const { granted } = await Notifications.getPermissionsAsync();
+  if (granted) { return }
+
+  await Notifications.requestPermissionsAsync();
+}
 
 export default function App() {
+
+  React.useEffect(() => {
+    requestPermissionsAsync();
+  })
+
   var bar_options = {
     // tabBarLabel: 'Archive',
     tabBarIcon: ({ color }) => (<Image source={{uri:'https://emoji.slack-edge.com/T03MDNTCW/%25E3%2581%2584%25E3%2581%2584%25E8%25A9%25B1/0fe642881d40d176.gif'}} style={{width:30, height:30 }}/>),
