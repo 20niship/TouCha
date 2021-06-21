@@ -1,45 +1,21 @@
 import * as React from 'react';
 // import MediaQuery from "react-responsive";
 import { Animated,Text, View, Button, Image, StyleSheet, TouchableOpacity, ScrollView, KeyboardAvoidingView,AppRegistry, TextInput, TouchableHighlight, Keyboard } from 'react-native';
-import Icon from 'react-native-vector-icons/FontAwesome';
-import { NavigationContainer } from '@react-navigation/native';
-import { createMaterialBottomTabNavigator } from '@react-navigation/material-bottom-tabs';
-
-class IconTest extends React.Component {
-  render() {
-      return (
-          <View>
-              <Icon
-                  name={this.props.icon}
-                  size={this.props.fontSize ? this.props.fontSize : 50}
-              />
-          </View>
-      );
-  }
-}
 
 export default class Setting extends React.Component{
     render(){
       const { navigation } = this.props;
     const room_temp = [
-       {name:"アカウント", navigation:"account"},
+       {name:"アカウント", navigation:"account"}, //navigation:クリックしたらそのページに行くようにするから。その名前を格納してる。21行目のnaigation.navigateで使う。
        {name:"通知", navigation:"notification"},
        {name:"運営からのお知らせ", navigation:"news_from_management_team"},
        {name:"運営へのご意見", navigation:"opinion"},
        {name:"アプリの使い方", navigation:"help"},
-       
+      
     ];
     var room_list_ui = [];
 
-    
     room_temp.forEach(function(room, index){
-      var navigate_name = [
-        {name:"account"},
-        {name:"notification"},
-        {name:"news_from_management_team"},
-        {name:"opinion"},
-        {name:"help"},
-      ];
       room_list_ui.push(
         //特定のルームに移動する頃はできていないので調整必要
         <TouchableOpacity onPress={() => { navigation.navigate(room.navigation //各画面に進む。画面遷移は西宮お願い！
