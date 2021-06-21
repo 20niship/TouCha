@@ -10,6 +10,8 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import io from "socket.io-client";
 
+import { createStackNavigator } from '@react-navigation/stack';
+const Stack = createStackNavigator();
 
 // // import * from 'ui-utils.js'  // 最終的にはこういう感じで別ファイルに分けるべき
 // // npm install --save @fortawesome/fontawesome-free でアイコンフォントをインストールする必要があ
@@ -25,6 +27,8 @@ import Setting from './utils/setting'
 import Archive from './utils/archive'
 import Room    from './utils/room'
 import socketHandler    from './proc/socket'
+import CreateRoom from './utils/createRoom'
+
 
 export default function App() {
   var bar_options = {
@@ -36,7 +40,7 @@ export default function App() {
 
   return (
     <NavigationContainer>
-      <Tab.Navigator
+      {/* <Tab.Navigator
         screenOptions={({route}) => ({tabBarIcon:({color,size}) => {
           size=25
           if (route.name === 'OpenRoom') {
@@ -54,12 +58,22 @@ export default function App() {
           return  <Icon name={iconName} size={size} />;
         },
       })}
-      >
-        <Tab.Screen name="OpenRoom" component={Archive} activeColor="#e91e63"/>
+      > */}
+
+    <Stack.Navigator>
+        <Stack.Screen name="OpenRoom" component={Archive} />
+        <Stack.Screen name="Room" component={Room}/>
+        <Stack.Screen name="Profile" component={Profile} />
+        <Stack.Screen name="Setting" component={Setting} />
+        <Stack.Screen name="createNewRoom" component={CreateRoom} />
+    </Stack.Navigator>
+        {/* <Tab.Screen name="OpenRoom" component={Archive} activeColor="#e91e63"/>
         <Tab.Screen name="Room" component={Room} activeColor="#e91e63" options={{ tabBarBadge: 3 }}/>
         <Tab.Screen name="Profile" component={Profile} activeColor="#e91e63" />
         <Tab.Screen name="Setting" component={Setting} activeColor="#e91e63" />
-      </Tab.Navigator>
+        {/* <Tab.Screen name="createNewRoom" component={CreateRoom} activeColor="#e91e63" /> */}
+      {/* </Tab.Navigator> */}
+
     </NavigationContainer>
   );
 }

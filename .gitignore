@@ -7,6 +7,11 @@ vs/
 .expo/
 .expo
 
+.history/
+.history
+.history/*
+/.history/*
+
 build/
 coverage/
 npm-debug.log
