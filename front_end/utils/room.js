@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { Text, View, Image, StyleSheet, ScrollView, KeyboardAvoidingView, TextInput, TouchableHighlight, TouchableOpacity, Keyboard } from 'react-native';
 import AutogrowInput from 'react-native-autogrow-input';
 import Icon from 'react-native-vector-icons/FontAwesome';
+import * as Notifications from 'expo-notifications';
 
 import axios from 'axios'; // POST通信で使用
 import {NavigationFooter} from './utils'
@@ -9,6 +10,16 @@ import {NavigationFooter} from './utils'
 // before : io('https://acbc591940e9.ngrok.io', {transports: ['websocket']} );
 // const socket = io("http://localhost:3000", {transports: ['websocket']} );
 
+const scheduleNotificationAsync = async () => {
+  await Notifications.scheduleNotificationAsync({
+    content: {
+      body: 'test'
+    },
+    trigger: {
+      seconds: 5,
+    }
+  })
+}
 
 export default class ChatView extends Component {
   constructor(props) {
@@ -138,6 +149,7 @@ export default class ChatView extends Component {
 */
 
   _sendMessage() {
+    scheduleNotificationAsync()
     // console.log(this.isSocketVerified);
     // if(! this.isSocketVerified){
     //   this.trySocketVerification();

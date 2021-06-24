@@ -5,6 +5,7 @@ import { Text, View, Button, Image, StyleSheet, TouchableOpacity, ScrollView, Ke
 export default class Profile extends React.Component{
     render(){
       //サーバーからユーザーの情報持ってくるユーザーときの変数が分からないので、勝手に置いた。
+      var user_icon="null" // TODO あとで設定;
       var user_name="TouCha";
       var user_grade=1;
       var user_class=1;
@@ -71,7 +72,7 @@ export default class Profile extends React.Component{
                 style={styles.icon_select_botton}>
                 <View style={styles.room_inner_text_1_TD} >
                   <Text style={{ fontSize: 15, color:"silver"}}>アイコン</Text>
-                  <Image source={require("./images/shinji.jpg")} style={{width:50, height:50}}></Image>
+                  <Image source={require("./images/go.png")} style={{width:50, height:50}}></Image>
                 </View>
                 <Image source={require("./images/go.png")} style={{width:20, height:20, marginRight:20, marginTop:10}}/>
               </TouchableOpacity >
