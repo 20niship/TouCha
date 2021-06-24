@@ -2,12 +2,9 @@ import * as React from 'react';
 import { Text, View, Button, Image, StyleSheet, TouchableOpacity, ScrollView, KeyboardAvoidingView,AppRegistry, TextInput, TouchableHighlight, Keyboard } from 'react-native';
 // import MediaQuery from "react-responsive";
 
-import photo_shinji from './images/shinji.jpg'
-
 export default class Profile extends React.Component{
     render(){
       //サーバーからユーザーの情報持ってくるユーザーときの変数が分からないので、勝手に置いた。
-      var user_icon=photo_shinji;
       var user_name="TouCha";
       var user_grade=1;
       var user_class=1;
