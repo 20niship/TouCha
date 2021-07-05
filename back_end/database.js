@@ -24,18 +24,6 @@ class DBmanager{
         this.cl_chat = "cl_chat";
         this.cl_rooms = "cl_rooms";
         this.cl_users = "cl_users";
-
-        //MySQL setttings
-        this.dbURL_mysql = "";
-
-
-        // collections
-        /*
-        mongo.connect(this.dbURL_mongo, (error, db) => {
-            this.mongodb_obj.collection(this.cl_chat)= db.collection('messages');
-            this.mongodb_obj.collection(this.cl_users) = db.collection("users");
-            this.mongodb_obj.collection(this.cl_rooms) = db.collection("rooms");
-        }*/
     }
 
 
@@ -79,20 +67,6 @@ class DBmanager{
         // this.tb_users = null;
         // this.tb_rooms = null;
         // this.tb_hoge  = null;
-
-        const connection2 = mysql.createConnection({
-            host: 'localhost',
-            user: 'user',
-            password: 'password'
-        });
-        connection2.connect((err) => {
-            if(err){
-                console.log("CONNECTION ERROR");
-                return;
-            }
-            console.log("SUCCESSFULLY CONNECTED");
-        });
-        connection2.end((err) => {});
     }
 
 
@@ -238,54 +212,6 @@ class DBmanager{
             });
         });
     }
-
-
-    async getuserinfo(userid){
-        const con = mysql.createConnection({
-            host: 'localhost',
-            user: 'user',
-            password: 'password',
-            database: 'info'
-        })
-        con.query('SELECT * FROM info WHERE userid = ?',
-        [userid],
-        (err, rows) => {
-            if(err){
-                return "ERROR";
-            }
-            if(rows.length == 0){
-                return "USER NOT FOUND";
-            }else if(rows.length > 1){
-                return "REGISTRATION ERROR";
-            }else{
-                return rows[0];
-            }
-        });
-    }
-
-    async verifyid(userid){
-        const con = mysql.createConnection({
-            host: 'localhost',
-            user: 'user',
-            password: 'password',
-            database: 'info'
-        })
-        con.query('SELECT EXISTS(SELECT 1 FROM info WHERE userid = ?',
-        [userid],
-        (err, rows) => {
-            if(err) throw err;
-            if(rows[0] == 0){
-                return "USER NOT FOUND";
-            }
-        });
-        con.query('UPDATE info set isVerified=true WHERE userid = ?',
-        [userid],
-        (err, rows) => {
-            if(err) throw err;
-            return "SUCCESSFULLY VERIFIED";
-        });
-    }
-    
 }
 
 

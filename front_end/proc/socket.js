@@ -26,6 +26,8 @@ export default class socketHandler{
             this.isSocketVerified = true;
             console.log("User authenticated");
             return true;
+          }else if(msg == "login-deny"){
+            alert("ユーザー認証に失敗しました。ユーザ情報が間違っている可能性があります。")
           }else{
             alert("ユーザー認証に失敗しました。ルームに参加していない可能性があります");
             // this.backtoArchive();
