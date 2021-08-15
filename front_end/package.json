@@ -6,7 +6,6 @@
     "axios": "^0.21.1",
     "expo": "^41.0.1",
     "expo-app-loading": "^1.1.2",
-    "expo-notifications": "~0.11.6",
     "install": "^0.13.0",
     "modal-react-native-web": "^0.1.2",
     "npm": "^6.14.11",
