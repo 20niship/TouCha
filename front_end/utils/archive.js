@@ -3,7 +3,9 @@ import * as React from 'react';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import socketHandler from '../proc/socket'
 import { NavigationFooter } from './utils'
-import { Text, View, StyleSheet, TouchableOpacity, ScrollView, TouchableHighlight, } from 'react-native';
+import {
+    Text, View, StyleSheet, TouchableOpacity, ScrollView
+} from 'react-native';
 
 class Open_room extends React.Component {
     constructor(props) {
@@ -12,7 +14,7 @@ class Open_room extends React.Component {
         this.hSock.createNew();
         this.state = {};
         this.room_data = [
-            { name: "room1", icon_name: "user-circle", lastmsg: "Hello room 1", status: "ok", id: "rid1" },
+            { name: "room1", icon_name: "user-circle", lastmsg: "Hello room 1", status: "ok", id: "rid1" },
             { name: "room2", icon_name: "user-circle", lastmsg: "Hello room 2", status: "ok", id: "rid2" },
             { name: "room3", icon_name: "user-circle", lastmsg: "Hello room 3", status: "ok", id: "rid3" },
             { name: "room4", icon_name: "user-circle", lastmsg: "Hello room 4", status: "ok", id: "rid4" },
@@ -90,7 +92,7 @@ class Open_room extends React.Component {
                 </View>
 
                 <ScrollView ref={(ref) => { this.scrollView = ref }} style={{
-                    height: 630 //heightは機械によって変なことにならないよう変数で調整する
+                    height: 630
                 }}>
                     {room_list_ui}
                 </ScrollView>

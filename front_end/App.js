@@ -7,9 +7,13 @@ import CreateRoom from './utils/createRoom'
 import Profile from './utils/profile'
 import Room from './utils/room'
 import Setting from './utils/setting'
-import EditProfile from "./utils/editProfile"
-import { NavigationContainer } from '@react-navigation/native';
-import { createStackNavigator } from '@react-navigation/stack';
+import {
+    NavigationContainer
+} from '@react-navigation/native';
+import {
+    createStackNavigator,
+    CardStyleInterpolators
+} from '@react-navigation/stack';
 import { useFonts } from 'expo-font'
 
 const Stack = createStackNavigator();
@@ -36,12 +40,21 @@ export default function App() {
         return (
             <NavigationContainer>
                 <Stack.Navigator>
-                    <Stack.Screen name="OpenRoom" component={Archive} />
-                    <Stack.Screen name="Room" component={Room} />
-                    <Stack.Screen name="Profile" component={Profile} />
-                    <Stack.Screen name="Setting" component={Setting} />
-                    <Stack.Screen name="createNewRoom" component={CreateRoom} />
-                    <Stack.Screen name="editProfile" component={EditProfile} />
+                    <Stack.Screen name="OpenRoom"
+                        options={{ cardStyleInterpolator: CardStyleInterpolators.forVerticalIOS }}
+                        component={Archive} />
+                    <Stack.Screen name="Room"
+                        options={{ cardStyleInterpolator: CardStyleInterpolators.forVerticalIOS }}
+                        component={Room} />
+                    <Stack.Screen name="Profile"
+                        options={{ cardStyleInterpolator: CardStyleInterpolators.forVerticalIOS }}
+                        component={Profile} />
+                    <Stack.Screen name="Setting"
+                        options={{ cardStyleInterpolator: CardStyleInterpolators.forVerticalIOS }}
+                        component={Setting} />
+                    <Stack.Screen name="createNewRoom"
+                        options={{ cardStyleInterpolator: CardStyleInterpolators.forVerticalIOS }}
+                        component={CreateRoom} />
                 </Stack.Navigator>
             </NavigationContainer>
         );
