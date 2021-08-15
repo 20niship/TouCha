@@ -1,9 +1,3 @@
-// const mysql = require('mysql');
-// connection.connect((err) => {
-//   if (err) throw err;
-//   console.log('Connected!');
-// });
-
 const mongo = require('mongodb').MongoClient;
 const url = ""; // MongoDB database url
 
@@ -21,7 +15,7 @@ const url = ""; // MongoDB database url
 function get_messages(userId) {
     mongo.connect(url, (error, db) => {
         const collection = db.collection('messages');
-        collection.find({ user:userId }).toArray((error, docs)=>{
+        collection.find({ user: userId }).toArray((error, docs) => {
             for (var i = 0; i < 50; i++) {
                 console.log(docs[i].text);
             }
