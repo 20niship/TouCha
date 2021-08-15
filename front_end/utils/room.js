@@ -1,7 +1,11 @@
 import React, { Component } from 'react';
-import { Text, View, Image, StyleSheet, ScrollView, KeyboardAvoidingView, TouchableHighlight, TouchableOpacity, Keyboard } from 'react-native';
+import {
+    TextInput, Text, View, Image, StyleSheet,
+    ScrollView, KeyboardAvoidingView, TouchableHighlight, TouchableOpacity, Keyboard
+} from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import * as Notifications from 'expo-notifications';
+import AutogrowInput from 'react-native-autogrow-input';
 
 import { NavigationFooter } from './utils'
 
@@ -314,14 +318,16 @@ class MessageBubble extends Component {
     }
 }
 
+
 //The bar at the bottom with a textbox and a send button.
 class InputBar extends Component {
     // componentUnMount系はrenameされて使わないほうが良いとWarningが出ていたので
-    // UNSAFE_componentWillReceiveProps(nextProps) {
-    //   if(nextProps.text === '') {
-    //     this.autogrowInput.resetInputText();
-    //   }
-    // }
+    UNSAFE_componentWillReceiveProps(nextProps) {
+        if (nextProps.text === '') {
+            this.autogrowInput.resetInputText();
+        }
+    }
+
 
     render() {
         return (
