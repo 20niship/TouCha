@@ -322,12 +322,11 @@ class MessageBubble extends Component {
 //The bar at the bottom with a textbox and a send button.
 class InputBar extends Component {
     // componentUnMount系はrenameされて使わないほうが良いとWarningが出ていたので
-    UNSAFE_componentWillReceiveProps(nextProps) {
-        if (nextProps.text === '') {
-            this.autogrowInput.resetInputText();
-        }
-    }
-
+    // UNSAFE_componentWillReceiveProps(nextProps) {
+    //   if(nextProps.text === '') {
+    //     this.autogrowInput.resetInputText();
+    //   }
+    // }
 
     render() {
         return (
@@ -484,4 +483,3 @@ const styles = StyleSheet.create({
         fontSize: 16,
     },
 })
-

@@ -1,6 +1,5 @@
 import * as React from 'react';
 import {View, Button, Image, StyleSheet, TouchableWithoutFeedback, Modal} from 'react-native';
-import ZoomImage from "./zoomImage.js";
 
 export default class SimpleModal extends React.Component{
   constructor(props){
