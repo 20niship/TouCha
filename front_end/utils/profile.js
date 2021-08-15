@@ -3,82 +3,98 @@ import { Text, View, Button, Image, StyleSheet, TouchableOpacity, ScrollView, Ke
 // import MediaQuery from "react-responsive";
 
 export default class Profile extends React.Component{
-    render(){
-      //サーバーからユーザーの情報持ってくるユーザーときの変数が分からないので、勝手に置いた。
-      var user_icon="null" // TODO あとで設定;
-      var user_name="TouCha";
-      var user_grade=1;
-      var user_class=1;
-      var user_lan="中国語";
-      var user_fac="理科一類";
-      var user_dep=null;
-      var fac_dep
-      if (user_dep==null){
-        fac_dep=user_fac;
-      }else{
-        fac_dep=user_fac + user_dep;
-      }
-      var user_message="こんにちは";
-      var user_hobby="プログラミング";
-      var user_birthday_year=2021;
-      var user_birthday_month=3;
-      var user_birthday_day=10;
-      var user_birthday=user_birthday_year + "年" + user_birthday_month + "月" + user_birthday_day +"日";
-      var user_id="e2b63e";
+  constructor(props){
+    super(props);
+    this.state={userData:{}, loaded:false};
+    this.getUserData();
+  }
 
-      var room_temp = [
-        //{name:"アイコン", user:user_icon, navigation:"icon"},
-        //navigation:クリックしたらそのページに行くようにするから。その名前を格納してる。21行目のnaigation.navigateで使う。
-        //user:ユーザーが設定している、その項目のプロフィール
-        {name:"名前", user:user_name, navigation:"user_name"},
-        {name:"学部学科・科類",user:fac_dep, navigation:"fac_dep"},
-        {name:"学年", user:user_grade ,navigation:"grade"},
-        {name:"一言メッセージ", user:user_message,navigation:"message"},
-        {name:"趣味", user:user_hobby,navigation:"hobby"},
-        {name:"誕生日", user:user_birthday,navigation:"birthday"},
-        {name:"ID", user:user_id,navigation:"user_id"},
-     ];
-     var room_list_ui = [];
- 
-     room_temp.forEach(function(room){
-       room_list_ui.push(
-         //特定のルームに移動する頃はできていないので調整必要
-         <TouchableOpacity onPress={() => { navigation.navigate(room.navigation //各画面に進む。画面遷移は西宮お願い！
-         ); }}
-           style={styles.select_botton}>
-           <View style={styles.room_inner_text_1_TD} >
+  static profileKey={
+    "icon":"アイコン",
+    "name":"名前",
+    "fac":"学部学科・科類",
+    "grade":"学年",
+    "message":"一言メッセージ",
+    "hobby":"趣味",
+    "birthday":"誕生日",
+    "id":"ID"
+  };
 
-             <Text style={{ fontSize: 15, color:"silver"}}>{room.name}</Text>
-             <Text style={{fontSize:18}}>{room.user}</Text>
-           </View>
-           <Image source={require("./images/go.png")} style={{width:20, height:20, marginRight:20, marginTop:10}}/>
-         </TouchableOpacity >
-         )
-        })
-        return(
-          <View style={{fontSize: 18, flex: 1, justifyContent: 'center',backgroundColor:"#eaeaea"}}>
-            <View style={{flexDirection:"row", justifyContent:"space-between", alignItems: 'center', marginTop:50, marginBottom:10, }}>
-              <View style={{width:40}}></View>
-              <Text style={{fontSize:25, alignItems:"center", justifyContent:"center"}}>マイプロフィール</Text>
-              <TouchableHighlight onPress={() => { navigation.navigate("setting" //設定画面に進む
-              ); }} style={{justifyContent:"center"}}>
-                <Image source={require("./images/setting.png")} style={{width:30, height:30, marginRight:20,}}/> 
-              </TouchableHighlight>
+  getUserData(){
+    //サーバーからユーザーの情報持ってくるユーザーときの変数が分からないので、勝手に置いた。
+    /*
+      {name:Str,grade:Num,・・・}て感じだと助かる
+    */
+    const userData={
+      icon:"https://pbs.twimg.com/profile_images/1264490158121869313/maQmeRbN_400x400.jpg", // TODO あとで設定;
+      name:"TouCha",
+      grade:"1",
+      class:"1",
+      lan:"中国語",
+      fac:"理科一類",
+      dep:null,
+      message:"こんにちは",
+      hobby:"プログラミング",
+      birthday_year:"2021年3月12日",
+      id:"e2b63e"
+    };
+    //----ここまでサーバーからくる想定
+    setTimeout(()=>this.setState({userData,loaded:true}), 1000);
+  }
+
+  render(){
+    const {navigation}=this.props;
+    if(!this.state.loaded){//TODO なんかいい感じに
+      return (
+        <Text>LOADING</Text>
+      );
+    }
+    const userData=this.state.userData;
+    const user_id=userData.id;
+    const profile_list_ui=(Object.entries(userData)).map((profile, i)=>{
+      const type=profile[0];
+      const name=Profile.profileKey[profile[0]];
+      let val=profile[1];
+      if(name===undefined)return null;
+      if(type==="fac")val+=userData.dep||"";
+      if(type==="id"){//変更不可のやつがIDだけならprofile_tempから消してreturnの中に直書きもあり 複数なら、["ID", "", ""・・・].includes(profile.name)で
+        return (
+          <TouchableOpacity style={styles.select_botton} key={i}>
+            <View style={styles.room_inner_text_1_TD} >
+              <Text style={{fontSize: 15, color:"silver"}}>{type}</Text>
+              <Text style={{fontSize:18}}>{val}</Text>
             </View>
-            <ScrollView ref={(ref) => { this.scrollView = ref }} style={{height:630 //heightは機械によって変なことにならないよう変数で調整する
-              }}>
-              <TouchableOpacity onPress={() => { navigation.navigate(room.navigation //各画面に進む。画面遷移は西宮お願い！
-              ); }}
-                style={styles.icon_select_botton}>
-                <View style={styles.room_inner_text_1_TD} >
-                  <Text style={{ fontSize: 15, color:"silver"}}>アイコン</Text>
-                  <Image source={require("./images/go.png")} style={{width:50, height:50}}></Image>
-                </View>
-                <Image source={require("./images/go.png")} style={{width:20, height:20, marginRight:20, marginTop:10}}/>
-              </TouchableOpacity >
-                {room_list_ui}
-            </ScrollView>        
-          </View>
+          </TouchableOpacity>
+        );
+      }else{
+        return (
+          <TouchableOpacity onPress={()=>navigation.navigate("editProfile", {type, temp:val, name, user_id})} style={styles[type==="icon"?"icon_select_botton":"select_botton"]} key={i}>
+            <View style={styles.room_inner_text_1_TD} >
+              <Text style={{fontSize:15, color:"silver"}}>{name}</Text>
+              {type==="icon"?
+                  <Image source={{uri:val}} style={{width:50, height:50}}></Image>
+                : <Text style={{fontSize:18}}>{val}</Text>
+              }
+            </View>
+            <Image source={require("./images/go.png")} style={{width:20, height:20, marginRight:20, marginTop:10}}/>
+          </TouchableOpacity>
+        );
+      }
+    });
+
+    return (
+      <View style={{fontSize: 18, flex: 1, justifyContent: 'center',backgroundColor:"#eaeaea"}}>
+        <View style={{flexDirection:"row", justifyContent:"space-between", alignItems: 'center', marginTop:50, marginBottom:10 }}>
+          <View style={{width:40}}></View>
+          <Text style={{fontSize:25, alignItems:"center", justifyContent:"center"}}>マイプロフィール</Text>
+          <TouchableHighlight onPress={()=>navigation.navigate("setting")} style={{justifyContent:"center"}}>{/*設定画面に進む*/}
+            <Image source={require("./images/setting.png")} style={{width:30, height:30, marginRight:20,}}/>
+          </TouchableHighlight>
+        </View>
+        <ScrollView style={{height:630}}>{/*heightは機械によって変なことにならないよう変数で調整する*/}
+          {profile_list_ui}
+        </ScrollView>
+      </View>
     );
   }
 }
@@ -93,7 +109,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     flexDirection: 'row',
     height:65,
-    backgroundColor:"white",
+    backgroundColor:"white"
   },
   icon_select_botton:{
     marginTop:10,
@@ -104,7 +120,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     flexDirection: 'row',
     height:80,
-    backgroundColor:"white",
+    backgroundColor:"white"
   },
   room_inner_text_1_TD: {
     borderRadius: 5,
@@ -114,7 +130,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 0,
     paddingVertical: 8,
     flexDirection:'column',
-    flex: 1,
+    flex: 1
   },
   header: {
     //position: 'relative',
@@ -122,8 +138,8 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     backgroundColor: '#03A9F4',
-    overflow: 'hidden',
-  },    
+    overflow: 'hidden'
+  },
   backgroundImage: {
     position: 'absolute',
     top: 0,
@@ -131,12 +147,12 @@ const styles = StyleSheet.create({
     right: 0,
     width: null,
     height: HEADER_MAX_HEIGHT,
-    resizeMode: 'cover',
+    resizeMode: 'cover'
   },
   messages:{
     backgroundColor:"white"
-  },
-})
+  }
+});
 
 const HEADER_MAX_HEIGHT = 200;
 const HEADER_MIN_HEIGHT = 60;

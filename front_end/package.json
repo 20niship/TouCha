@@ -6,6 +6,10 @@
     "axios": "^0.21.1",
     "expo": "^41.0.1",
     "expo-app-loading": "^1.1.2",
+    "expo-document-picker": "^9.2.4",
+    "expo-image-manipulator": "^9.2.2",
+    "expo-image-picker": "^10.2.2",
+    "expo-notifications": "~0.11.6",
     "install": "^0.13.0",
     "modal-react-native-web": "^0.1.2",
     "npm": "^6.14.11",
@@ -21,8 +25,7 @@
     "react-native-popup-menu": "^0.15.10",
     "react-native-screens": "^3.4.0",
     "react-native-web": "^0.16.3",
-    "socket.io-client": "^4.1.1",
-    "expo-notifications": "~0.11.6"
+    "socket.io-client": "^4.1.1"
   },
   "devDependencies": {
     "@babel/core": "~7.9.0",

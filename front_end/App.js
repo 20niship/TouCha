@@ -7,6 +7,7 @@ import CreateRoom from './utils/createRoom'
 import Profile from './utils/profile'
 import Room from './utils/room'
 import Setting from './utils/setting'
+import EditProfile from "./utils/editProfile"
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { useFonts } from 'expo-font'
@@ -40,6 +41,7 @@ export default function App() {
                     <Stack.Screen name="Profile" component={Profile} />
                     <Stack.Screen name="Setting" component={Setting} />
                     <Stack.Screen name="createNewRoom" component={CreateRoom} />
+                    <Stack.Screen name="editProfile" component={EditProfile} />
                 </Stack.Navigator>
             </NavigationContainer>
         );
