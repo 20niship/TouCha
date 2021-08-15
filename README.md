@@ -1,4 +1,4 @@
-# My Universal React Project
+# TouCha
 
 <p>
   <!-- iOS -->
@@ -15,30 +15,20 @@
   </a>
 </p>
 
-## 🚀 How to use
+## TouChaとは
+- 2021年3月11日設立の東大プログラミングサークルTouChaによるプロジェクト
+- 東大生による、東大生のための東大生用チャットアプリ
+- オフラインで人と会う機会がほとんどない東大生同士が、情報交換したり友達づくりができる。このアプリを通して自分も共同体に属して活動しているという感覚を持ってもらえたら良い
 
-- Install packages with `yarn` or `npm install`.
-  - If you have native iOS code run `npx pod-install`
-- Run `yarn start` to start the bundler.
-- Open the project in a React runtime to try it:
-  - iOS: [Client iOS](https://itunes.apple.com/app/apple-store/id982107779)
-  - Android: [Client Android](https://play.google.com/store/apps/details?id=host.exp.exponent&referrer=blankexample)
-  - Web: Any web browser
+## 製作の動機
+- 大学1年生時のサークル長の体験と、後輩たちに同じ思いをして欲しくないという強い思いから生まれた。
+  - コロナ禍により東大生どうしの交流が激減した。サークル長は大学1年生としての大学生活のほとんどをオンライン授業のみで過ごしてきたが、友達もできず家の中で過ごすだけの日々を送り、とても寂しい思いをした。
 
-## Adding Native Code
+## 使用言語
+- JavaScript, React, React Native, Node.js
 
-This project can be run from a web browser or the Expo client app. You may find that you want to add more native code later on. You can do this by ejecting the project and rebuilding it yourself.
+## How to build
+- 
 
-- Run `yarn eject` to create the native projects.
-- You can still run your project in the web browser or Expo client, you just won't be able to access any new native modules you add.
-
-## Publishing
-
-- Deploy the native app to the App store and Play store using this guide: [Deployment](https://docs.expo.io/distribution/app-stores/).
-- Deploy the website using this guide: [Web deployment](https://docs.expo.io/distribution/publishing-websites/).
-
-## 📝 Notes
-
-- Learn more about [Universal React](https://docs.expo.io/).
-- See what API and components are [available in the React runtimes](https://docs.expo.io/versions/latest/).
-- Find out more about developing apps and websites: [Guides](https://docs.expo.io/guides/).
+## dependancies
+- 
