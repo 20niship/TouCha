@@ -25,10 +25,19 @@
   - コロナ禍により東大生どうしの交流が激減した。サークル長は大学1年生としての大学生活のほとんどをオンライン授業のみで過ごしてきたが、友達もできず家の中で過ごすだけの日々を送り、とても寂しい思いをした。
 
 ## 使用言語
-- JavaScript, React, React Native, Node.js
+- JavaScript, React Native, Node.js
 
 ## How to build
-- 
+- フロントエンド
+  - `$ cd front_end`
+  - `$ npm start`
+- バックエンド
+  - 事前にMongoDBを起動しておいて下さい。
+  - `$ cd back_end`
+  - `$ npm main.js`
+  - main.jsが起動した状態でターミナルになにか文字を入力して<kbd>Enter</kbd>を押すと、MongoDBにテストデータが書き込まれます。
+
 
 ## dependancies
-- 
+- front_end, backendともにnpmでパッケージを管理しているので、それぞれのフォルダに行って、`npm install`をすれば必要なライブラリをインストールできます。
+- できなかったらSlackで聞いてね
