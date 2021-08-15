@@ -138,6 +138,25 @@ app.all("/api/getLast50msg", function(req, res){
     });
 });
 
+app.all("/api/refreshprof", function(req, res){
+
+    var dbObj = DBManager.getDB();
+    dbObj.collection("cl_users").update({id: req.body.user_id},
+        {
+            name: req.body.user_name,
+            grade: req.body.user_grade,
+            fac: req.body.user_user_fac,
+            u_message: req.body.user_message,
+            hobby: req.body.user_hobby,
+            birth_y: req.body.user_birthday_year,
+            birth_m: req.body.user_birthday_month,
+            birth_d: req.body.user_birthday_day,
+        }
+    );
+    console.log("Profile Refreshed!");
+    
+});
+
 
 
 app.all("/api/getRoomList", function(req, res){

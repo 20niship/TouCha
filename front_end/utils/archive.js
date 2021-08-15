@@ -21,39 +21,7 @@ class Open_room extends React.Component{
     this.hSock.createNew();
   
     this.state = { };
-  }
-
-
-  createNewRoom(){
-    console.log("New Room Create!!");
-    console.log(this.state);
-
-    this.setState({ ModalVisivle: false}) // close modal
-
-    fetch('http://localhost:3000/api/createNewRoom', {
-      method: 'POST',
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({user_id: "id1", hashed_pass:"password01", name: this.state.newRoomName, type:this.state.newRoomType })
-    }).then((response) => response.json())
-    .then(  (responseJson) => {
-      if(responseJson.status = "ok"){
-        console.log("Roomが正しく作成された！")
-      }else{
-        console.log("Error!!!");
-      }
-      
-      this.forceUpdate(); //画面再レンダリング
-    }).catch((error) => {
-      console.log("[ ERROR ]サーバーと正常に通信できませんでした (createNewRoom)")
-    });
-  }
-
-  render(){
-    const { navigation } = this.props;
-  const room_temp = [
+    this.room_data = [
       {name:"room1", icon_name:"user-circle", lastmsg:"Hello room 1", status:"ok", id:"rid1"},
       {name:"room2", icon_name:"user-circle", lastmsg:"Hello room 2", status:"ok", id:"rid2"},
       {name:"room3", icon_name:"user-circle", lastmsg:"Hello room 3", status:"ok", id:"rid3"},
@@ -64,19 +32,42 @@ class Open_room extends React.Component{
       {name:"room8", icon_name:"user-circle", lastmsg:"Hello room 5", status:"ok", id:"rid8"},
       {name:"room9", icon_name:"user-circle", lastmsg:"Hello room 5", status:"ok", id:"rid9"},
       {name:"room10", icon_name:"user-circle", lastmsg:"Hello room 5", status:"ok", id:"rid10"},
-  ];
-  var room_list_ui = [];
+   ];
+   this.getRoomData();
+  }
 
-  var room_inner_text_2 = {
-    margin:0,
-    paddingHorizontal: 10,
-    paddingVertical: 5,
-    flexDirection:'row',
-    flex: 1,
-  };
-  
-  room_temp.forEach( (room, index) => {
-    room_list_ui.push(
+  getRoomData(){
+    fetch('http://localhost:3000/api/getRoomList', {
+      method: 'POST',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({user_id:"id1"})
+    }).then((response) => response.json())
+    .then(  (responseJson) => {
+      var rooms = responseJson.room_list;
+      console.log(rooms);
+    }).catch((error) => {
+      console.log(error);
+      console.log("[ ERROR ] ERROR server connection noe valid? ネットにつながってないかも")
+    });
+  }
+
+  render(){
+    const { navigation } = this.props;
+    var room_list_ui = [];
+
+    var room_inner_text_2 = {
+      margin:0,
+      paddingHorizontal: 10,
+      paddingVertical: 5,
+      flexDirection:'row',
+      flex: 1,
+    };
+    
+    this.room_data.forEach( (room, index) => {
+     room_list_ui.push(
       //特定のルームに移動する頃はできていないので調整必要
       <TouchableOpacity onPress={() => { 
         navigation.navigate("Room", {roomid : room.id, hSock:this.hSock}); 
