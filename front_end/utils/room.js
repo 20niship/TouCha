@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { Text, View, Image, StyleSheet, ScrollView, KeyboardAvoidingView, TouchableHighlight, TouchableOpacity, Keyboard } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import * as Notifications from 'expo-notifications';
-
+import AutogrowInput from "react-native-autogrow-input";
 import { NavigationFooter } from './utils'
 
 // before : io('https://acbc591940e9.ngrok.io', {transports: ['websocket']} );
@@ -478,4 +478,3 @@ const styles = StyleSheet.create({
         fontSize: 16,
     },
 })
-
