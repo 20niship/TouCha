@@ -11,7 +11,6 @@ export default class Setting extends React.Component{
        {name:"運営からのお知らせ", navigation:"news_from_management_team"},
        {name:"運営へのご意見", navigation:"opinion"},
        {name:"アプリの使い方", navigation:"help"},
-      
     ];
     var room_list_ui = [];
 
