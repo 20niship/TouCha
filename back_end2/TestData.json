@@ -1,0 +1,28 @@
+{
+    "users": [
+        {
+            "email": "123456879@euh.com",
+            "userid": null,
+            "name": "alice",
+            "password": "haoetuoehuh"
+        },
+        {
+            "email": "1273487879@euh.com",
+            "userid": "bob382",
+            "name": "bob",
+            "password": "hohenauha"
+        },
+        {
+            "email": "74384972@euh.com",
+            "userid": "chrl38",
+            "name": "charlie",
+            "password": "daoeuhhoeu"
+        },
+        {
+            "email": "1283749@euh.com",
+            "userid": "dan384",
+            "name": "daniel",
+            "password": "ahoetuadoeu"
+        }
+    ]
+}
