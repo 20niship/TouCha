@@ -19,8 +19,9 @@ TESTはDeveloper のユーザーを作成するか、またはアクセス制限
 -
 
 ## Mongodb
-
 use <db>  switch the database
+show collections / dbs 
+db.<name>.<command>
 
 ## USER 認証
 - ユーザー登録されていない場合
@@ -66,9 +67,10 @@ use <db>  switch the database
 - User
   - uuid                      UUID
   - userID                    ユーザ情報(unique)
+  - email                     メールアドレス
   - username                  ユーザーの名前
-  - hashed_password           パスワードをハッシュ化したやつ
-  - isVerify                  認証されていた
+  - hashedPassWord            パスワードをハッシュ化したやつ
+  - isVerify                  認証されたUserかどうか
   - room_list                 roomID(room作成時に作られるuniqueな名前)
   - friends_list              userIDのリスト
 - Room

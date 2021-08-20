@@ -241,9 +241,7 @@ app.all("/api/getInfo", function(req, res) {
 
 
 io.on('connection', function(socket) {
-
     console.log('connected!');
-
     // ソケット接続語、ログイン（ユーザー認証）を行う
     socket.on('login', function(msg) {
         var message = JSON.parse(msg);

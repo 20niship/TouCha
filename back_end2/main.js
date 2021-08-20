@@ -3,8 +3,6 @@ const express = require('express')
 const app = express()
 const bodyParser = require('body-parser')
 const server = require('http').createServer(app)
-// const { Server } = require("socket.io")
-const io = new require('socket.io')(server)
 const fs = require('fs')
 
 // 使う定数を指定
@@ -14,10 +12,9 @@ const testUsers_json = JSON.parse(fs.readFileSync('./TestData.json', 'utf-8'))
 const DataBase = require('./utils').database
 const Mailer = require('./utils').mailer
 
-
+const io = new require('socket.io')(server)
 
 async function run() {
-
     var database = new DataBase()
     // ========================================== TEST ============================================
     await database.connect()
@@ -31,27 +28,58 @@ async function run() {
     await database.userAuthentication("123456879@euh.com", "haoetuoehuh")
     // ============================================================================================
 
+    // HTTP
     app.use(bodyParser.urlencoded({ extended: true }));
     app.use(bodyParser.json());
 
-    app.get('/', (req, res) => {
+    app.get('/', async (req, res) => {
         res.send('Welcome To Toucha Server')
     })
 
-    app.post('/test', (req, res) => {
+    app.post('/test', async (req, res) => {
         console.log(req.body)
         res.send({ send: 'data' })
     })
 
     // Login 処理
-    app.post('/login', (req, res) => {
-        console.log(req.body)
-        res.sed('accepted')
+    app.post('/login', async (req, res) => {
+        console.log('login request has accepted')
+        console.log(await database.userAuthentication(req.body.email, req.body.password))
     })
 
-    app.post('/createAccount', (req, res) => {
+    app.post('/requestToken', async (req, res) => {
+        console.log('Token request has accepted')
+        database.createToken(req.body.email)
+    })
+
+    app.post('/createAccount', async (req, res) => {
         console.log(req.body)
-        res.sed('accepted')
+        res.send('accepted')
+    })
+
+    // Socket.io
+    // Attach
+    io.sockets.on('connect', (socket) => {
+        console.log('Socket io has Connected')
+        io.sockets.on('disconnect', () => {
+            console.log('Socket io has Disconnected')
+        })
+
+        socket.on("test", (msg) => {
+            console.log(msg)
+        })
+    })
+
+    io.of('socketTest').on('connect', (socket) => {
+        console.log('Soket has connected to socketTest')
+
+        socket.on('disconnect', () => {
+            console.log('Socket has Disconnected from socketTest')
+        })
+
+        socket.on('test', (msg) => {
+            console.log(msg)
+        })
     })
 
     // Server Deploy

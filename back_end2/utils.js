@@ -19,17 +19,18 @@ class Mailer {
         })
     }
 
-    async send(msg) {
+    async send(email, subject, msg) {
         await this.transport.sendMail({
             from: 'touchatest1432@gmail.com', // sender address
-            to: "touchatest1432@gmail.com", // list of receivers
-            subject: "From Toucha_test", // Subject line
+            to: email, // list of receivers
+            subject: subject, // Subject line
             text: msg, // plain text body
         });
     }
 }
 
-class Hash {
+// Hashを作成するクラス
+class _Hash {
     constructor() {
         this.hashMethod = 'sha256'
     }
@@ -54,7 +55,7 @@ class DataBase {
         this.users = null
         this.rooms = null
         this.talks = null
-        this.hash = new Hash()
+        this.hash = new _Hash()
     }
 
     // MongoDBのデータベースとの接続処理をする
@@ -62,11 +63,10 @@ class DataBase {
         try {
             console.log('connecting ...')
             const client = mongodb.MongoClient
-            this.server = await client.connect(this.uri,
-                {
-                    useNewUrlParser: true,
-                    useUnifiedTopology: true
-                })
+            this.server = await client.connect(this.uri, {
+                useNewUrlParser: true,
+                useUnifiedTopology: true
+            })
             console.log(`MongoDB Connected: ${this.uri}`); // MongoDBサーバーに接続
             this.db = this.server.db(this.db_name) // Databaseの登録
             this.tokens = this.db.collection('tokens')
@@ -87,7 +87,7 @@ class DataBase {
     }
 
     // ユーザー追加関数
-    async addUser(username, mail, password) {
+    async addUser(username, email, password) {
         try {
             if (await this.users.findOne({ username: username })) {
                 throw "This Username has been taken"
@@ -95,34 +95,33 @@ class DataBase {
                 await this.users.insertOne({
                     uuid: uuidv4(),
                     userID: null,
-                    mailadress: mail,
+                    email: email,
                     username: username,
                     hashedPassWord: await this.hash.make(password),
-                    friend_list: "test"
+                    isVerified: false,
+                    room_list: [],
+                    friend_list: []
                 })
             }
-            console.log('user data has inserted')
-        } catch (e) {
-            console.log(e)
+        } catch (err) {
+            console.log(err)
         }
     }
 
     // メールに紐ついたTokenを発行し、mail宛にメールを送る
-    async createToken(mail) {
+    async createToken(email) {
         var date = new Date()
         var token = Math.floor(100000 + Math.random() * 900000)
         var mailer = new Mailer()
         try {
             await this.tokens.insertOne({
                 date: date,
-                email: mail,
+                email: email,
                 token: token,
                 expired: true // 有効か無効か判定
             })
-            console.log('Token has been issued')
         } catch (err) { console.log(err) }
-        // mailer.send(token.toString()) // 送るメッセージの件名を考えること。 TODO
-
+        mailer.send(email, 'Token Request', token.toString()) // 送るメッセージの件名を考えること。 TODO
         return token
     }
 
@@ -137,28 +136,44 @@ class DataBase {
     }
 
     // ユーザーログインの認証に使う
-    async userAuthentication(mail, password) {
-        var match = await this.users.findOne({ email: mail })
-        console.log(match)
-        var accessCode = uuidv4()
-        this.accessCode.insertOne({
-            accessCode: accessCode,
-            email: mail,
-            date: new Date(),
-            expired: false
-        })
-        return accessCode
+    async userAuthentication(email, password) {
+        try {
+            var match = await this.users.findOne({ email: email })
+            if (!match) {
+                // emailが登録されていない場合1を投げる
+                throw 1
+            } else if (!(await match.hashedPassWord == await this.hash.make(password))) {
+                // passwordが一致していない場合2を投げる
+                console.log('OK')
+                throw 2
+            } else {
+                // 上以外の場合はacccessCodeを作成し、返り値としてaccessCodeを返す
+                var accessCode = uuidv4()
+                await this.accessCode.insertOne({
+                    accessCode: accessCode,
+                    email: email,
+                    date: new Date(),
+                    expired: false
+                })
+                return accessCode
+            }
+        } catch (err) {
+            return err
+        }
     }
 
+    // ユーザーを探す
     async findUser(name) {
         try {
             return await this.users.findOne({ username: name })
         } catch (err) { console.log(err) }
     }
 
+    // ルームを探す
     async findRoom() {
     }
 
+    // トークにフィルターをかける
     async filterTalks() {
     }
 }
