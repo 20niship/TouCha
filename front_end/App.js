@@ -2,6 +2,7 @@ import 'react-native-gesture-handler';
 import * as Notifications from 'expo-notifications';
 import * as React from 'react';
 import AppLoading from 'expo-app-loading';
+import Loading from './utils/loading'
 import Archive from './utils/archive';
 import CreateRoom from './utils/createRoom';
 import Profile from './utils/profile';
@@ -17,30 +18,34 @@ import {
 } from '@react-navigation/stack';
 import { useFonts } from 'expo-font'
 
+// Stack Navigator
 const Stack = createStackNavigator();
 
+// 通知の許可をとる関数
 const requestPermissionsAsync = async () => {
     const { granted } = await Notifications.getPermissionsAsync();
     if (granted) { return }
     await Notifications.requestPermissionsAsync();
 }
 
+// Main Function
 export default function App() {
     const [isLoaded] = useFonts({
         "CustomFont": require("./assets/fonts/3270-NF.otf"),
         "Mplus": require("./assets/fonts/Mplus.ttf")
     })
 
-    React.useEffect(() => {
+    React.useEffect(() => { // Push通知の許可
         requestPermissionsAsync();
     })
 
     if (!isLoaded) {
-        return <AppLoading />;
+        return <Loading />;
     } else {
         return (
             <NavigationContainer>
-                <Stack.Navigator>
+                <Stack.Navigator
+                    initialRouteName="OpenRoom">
                     <Stack.Screen name="OpenRoom"
                         options={{ cardStyleInterpolator: CardStyleInterpolators.forVerticalIOS, headerShown: false }}
                         component={Archive} />

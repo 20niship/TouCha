@@ -7,7 +7,7 @@ import {
     Text, View, StyleSheet, TouchableOpacity, ScrollView
 } from 'react-native';
 
-class Open_room extends React.Component {
+export default class Open_room extends React.Component {
     constructor(props) {
         super(props);
         this.hSock = new socketHandler();
@@ -27,7 +27,8 @@ class Open_room extends React.Component {
         ];
         this.getRoomData();
     }
-    getRoomData() {
+
+    getRoomData() { // Socket.io　を使いましょう
         fetch('http://localhost:3000/api/getRoomList', {
             method: 'POST',
             headers: {
@@ -44,6 +45,7 @@ class Open_room extends React.Component {
                 console.log("[ ERROR ] ERROR server connection noe valid? ネットにつながってないかも")
             });
     }
+
     render() {
         const { navigation } = this.props;
         var room_list_ui = [];
@@ -104,7 +106,6 @@ class Open_room extends React.Component {
     }
 }
 
-export default Open_room;
 
 const styles = StyleSheet.create({
     room_inner_text_1_TD: {
@@ -168,3 +169,4 @@ const styles = StyleSheet.create({
         fontFamily: "Mplus"
     }
 })
+

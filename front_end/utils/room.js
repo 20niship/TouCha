@@ -8,19 +8,16 @@ import * as Notifications from 'expo-notifications';
 import AutogrowInput from 'react-native-autogrow-input';
 import { NavigationFooter } from './utils'
 
-// before : io('https://acbc591940e9.ngrok.io', {transports: ['websocket']} );
-// const socket = io("http://localhost:3000", {transports: ['websocket']} );
-// プッシュ通知
-// const scheduleNotificationAsync = async () => {
-//     await Notifications.scheduleNotificationAsync({
-//         content: {
-//             body: 'test'
-//         },
-//         trigger: {
-//             seconds: 5,
-//         }
-//     })
-// }
+const scheduleNotificationAsync = async () => {
+    await Notifications.scheduleNotificationAsync({
+        content: {
+            body: 'test'
+        },
+        trigger: {
+            seconds: 5,
+        }
+    })
+}
 
 export default class ChatView extends Component {
     constructor(props) {
@@ -150,7 +147,7 @@ export default class ChatView extends Component {
     */
 
     _sendMessage() {
-        // scheduleNotificationAsync()
+        scheduleNotificationAsync()
         // console.log(this.isSocketVerified);
         // if(! this.isSocketVerified){
         //   this.trySocketVerification();

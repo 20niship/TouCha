@@ -20,7 +20,6 @@ class DBmanager {
         this.dbURL_mongo = "mongodb://localhost:27017";
         this.mongo_db_name = "TouchaTest";
         this.isConnectedtoMongoDB = false;
-
         this.cl_chat = "cl_chat";
         this.cl_rooms = "cl_rooms";
         this.cl_users = "cl_users";

@@ -1,5 +1,5 @@
 import React from 'react';
-import {PanResponder, Platform, NativeModules, Alert, Text, View, Button, Image, StyleSheet, TouchableWithoutFeedback, ScrollView, KeyboardAvoidingView, TextInput} from 'react-native';
+import {PanResponder, Alert, Text, View, Button, Image, StyleSheet, TouchableWithoutFeedback, TextInput} from 'react-native';
 import * as expoImagePicker from "expo-image-picker";
 import * as ImageManipulator from "expo-image-manipulator";
 import {getDocumentAsync} from "expo-document-picker";

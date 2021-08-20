@@ -1,18 +1,9 @@
-import * as React from 'react';
 import 'react-native-gesture-handler';
-import { Text, View, Button, Image, StyleSheet, TouchableOpacity, ScrollView, TextInput, TouchableHighlight, } from 'react-native';
-import Icon from 'react-native-vector-icons/FontAwesome';
-import Modal from 'modal-react-native-web';
-import { Overlay } from 'react-native-elements';
+import * as React from 'react';
 import { RadioButton } from 'react-native-paper';
-import io from "socket.io-client";
+import { Text, View, StyleSheet, TextInput, TouchableHighlight, } from 'react-native';
 
-// import MediaQuery from "react-responsive";
-
-import socketHandler from '../proc/socket'
-
-
-class CreateRoom extends React.Component {
+export default class CreateRoom extends React.Component {
     constructor(props) {
         super(props);
         this.state = {};
@@ -34,16 +25,6 @@ class CreateRoom extends React.Component {
         this.state.newRoomIcon = "null";
         this.state.newRoomType = "open";
     }
-
-
-    // ルーム一覧画面に戻る
-    backtoArchive() {
-        console.log("leaving room....")
-
-        const { navigation } = this.props;
-        navigation.navigate("OpenRoom");
-    }
-
 
     createNewRoom() {
         console.log("New Room Create!!");
@@ -75,7 +56,6 @@ class CreateRoom extends React.Component {
     render() {
         const { navigation } = this.props;
         const __createNewRoom = () => { this.createNewRoom() };
-        const __backtoArchive = () => { this.backtoArchive() };
         return (
             <View>
                 <Text>Create Room </Text>
@@ -109,10 +89,10 @@ class CreateRoom extends React.Component {
 
                 <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}>
                     <TouchableHighlight onPress={__createNewRoom} activeOpacity={0.2}>
-                        <View style={{ margin: 10, width: 140, height: 30, backgroundColor: '#5555ff', justifyContent: 'center', alignItems: 'center', borderRadius: 10, shadowColor: '#000', shadowOffset: { width: 2, height: 2 }, shadowOpacity: 0.8, shadowRadius: 2 }}><Text>Create Room</Text></View>
+                        <View style={styles.acceptButton}><Text>Create Room</Text></View>
                     </TouchableHighlight>
-                    <TouchableHighlight onPress={__backtoArchive} activeOpacity={0.2}>
-                        <View style={{ margin: 10, width: 140, height: 30, backgroundColor: '#bbbbbb', justifyContent: 'center', alignItems: 'center', borderRadius: 10, shadowColor: '#000', shadowOffset: { width: 2, height: 2 }, shadowOpacity: 0.8, shadowRadius: 2 }}><Text>  Cancel  </Text></View>
+                    <TouchableHighlight onPress={() => navigation.navigate("OpenRoom")} activeOpacity={0.2}>
+                        <View style={styles.cancelButton}><Text>  Cancel  </Text></View>
                     </TouchableHighlight>
                 </View>
             </View>
@@ -121,65 +101,32 @@ class CreateRoom extends React.Component {
 }
 
 
-export default CreateRoom;
-
-
 const styles = StyleSheet.create({
-    room_inner_text_1_TD: {
-        borderRadius: 5,
-        marginTop: 8,
-        marginRight: 10,
-        marginLeft: 10,
-        paddingHorizontal: 0,
-        paddingVertical: 8,
-        flexDirection: 'column',
-        flex: 1
+    cancelButton: {
+        margin: 10,
+        width: 140,
+        height: 30,
+        backgroundColor: '#bbbbbb',
+        justifyContent: 'center',
+        alignItems: 'center',
+        borderRadius: 10,
+        shadowColor: '#000',
+        shadowOffset: { width: 2, height: 2 },
+        shadowOpacity: 0.8,
+        shadowRadius: 2
     },
 
-    messages: {
-        backgroundColor: "white"
-    },
-
-    // Modal example
-    centeredView: {
-        flex: 1,
-        justifyContent: "center",
-        alignItems: "center",
-        marginTop: 22
-    },
-    modalView: {
-        margin: 20,
-        backgroundColor: "white",
-        borderRadius: 20,
-        padding: 35,
-        alignItems: "center",
-        shadowColor: "#000",
-        shadowOffset: {
-            width: 0,
-            height: 2
-        },
-        shadowOpacity: 0.25,
-        shadowRadius: 4,
-        elevation: 5
-    },
-    button: {
-        borderRadius: 20,
-        padding: 10,
-        elevation: 2
-    },
-    buttonOpen: {
-        backgroundColor: "#F194FF",
-    },
-    buttonClose: {
-        backgroundColor: "#2196F3",
-    },
-    textStyle: {
-        color: "white",
-        fontWeight: "bold",
-        textAlign: "center"
-    },
-    modalText: {
-        marginBottom: 15,
-        textAlign: "center"
+    acceptButton: {
+        margin: 10,
+        width: 140,
+        height: 30,
+        backgroundColor: '#5555ff',
+        justifyContent: 'center',
+        alignItems: 'center',
+        borderRadius: 10,
+        shadowColor: '#000',
+        shadowOffset: { width: 2, height: 2 },
+        shadowOpacity: 0.8,
+        shadowRadius: 2
     }
 })
