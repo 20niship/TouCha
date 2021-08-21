@@ -4,6 +4,7 @@ const { v4: uuidv4 } = require('uuid')
 const { createHash } = require('crypto');
 const nodemailer = require('nodemailer')
 
+
 // メールを送るクラス
 class Mailer {
     constructor() {

@@ -14,6 +14,8 @@ const Mailer = require('./utils').mailer
 
 const io = new require('socket.io')(server)
 
+const http = require('http')
+
 async function run() {
     var database = new DataBase()
     // ========================================== TEST ============================================
@@ -44,7 +46,9 @@ async function run() {
     // Login 処理
     app.post('/login', async (req, res) => {
         console.log('login request has accepted')
+        console.log(req.body)
         console.log(await database.userAuthentication(req.body.email, req.body.password))
+        res.send({ body: 'yayy' })
     })
 
     app.post('/requestToken', async (req, res) => {
@@ -56,6 +60,7 @@ async function run() {
         console.log(req.body)
         res.send('accepted')
     })
+
 
     // Socket.io
     // Attach

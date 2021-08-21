@@ -1,5 +1,6 @@
 const request = require("request");
 const io = require("socket.io-client")
+const http = require('http')
 
 class Client {
     constructor() {
@@ -7,24 +8,36 @@ class Client {
     }
 
     // サーバーへPOSTする関数
-    async _requestToServer(path, data) {
-        request({
-            url: this.url.concat('', path),
+    async _requestToServer(path, msg, callback) {
+        let postData = msg
+        let postDataStr = JSON.stringify(postData)
+        let req = http.request({
+            // url: this.url.concat('', path),
+            // port: 3000,
+            host: 'localhost',
+            port: 3000,
+            path: path,
             headers: {
-                "content-type": "application/json"
+                "Content-Type": "application/json",
+                "Content-Length": Buffer.byteLength(postDataStr)
             },
             method: 'POST',
-            json: true,
-            body: data
-        }, (err, res, body) => {
-            var data = body
+        }, (res) => {
+            res.setEncoding('utf8');
+            res.on('data', (data) => {
+                callback(JSON.parse(data))
+            });
+            res.on('end', () => {
+                console.log('No more data in response.');
+            });
         })
-        return data
+        req.write(JSON.stringify(msg))
+        req.end()
     }
 
     // メールアドレスと、パスワードを送信することによって、アクセストークンを取得
     async login(email, password) {
-        console.log(await this._requestToServer('/login', { email: email, password: password }))
+        await this._requestToServer('/login', { email: email, password: password }, (msg) => { console.log(msg) })
     }
 
     // emailに紐付いたtokenを作成、email宛にtokenを送信
