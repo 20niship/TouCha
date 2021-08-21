@@ -1,14 +1,18 @@
 import 'react-native-gesture-handler';
 import * as Notifications from 'expo-notifications';
 import * as React from 'react';
-import AppLoading from 'expo-app-loading';
-import Loading from './utils/loading'
+import { View, Text } from 'react-native'
+// import Loading from './utils/loading'
 import Archive from './utils/archive';
 import CreateRoom from './utils/createRoom';
 import Profile from './utils/profile';
 import Room from './utils/room';
 import Setting from './utils/setting';
 import EditProfile from "./utils/editProfile";
+import Login from "./utils/login"
+import CreateAccount from "./utils/createAccount"
+import TokenRequest from "./utils/tokenRequest.js"
+import EmailAuthentication from "./utils/emailAuthentication.js"
 import {
     NavigationContainer
 } from '@react-navigation/native';
@@ -18,7 +22,6 @@ import {
 } from '@react-navigation/stack';
 import { useFonts } from 'expo-font'
 
-// Stack Navigator
 const Stack = createStackNavigator();
 
 // 通知の許可をとる関数
@@ -39,14 +42,32 @@ export default function App() {
         requestPermissionsAsync();
     })
 
+
     if (!isLoaded) {
-        return <Loading />;
+        return (<View>
+            <Text>
+                Loading
+            </Text>
+        </View>
+        );
     } else {
         return (
             <NavigationContainer>
                 <Stack.Navigator
-                    initialRouteName="OpenRoom">
-                    <Stack.Screen name="OpenRoom"
+                    initialRouteName="Login">
+                    <Stack.Screen name="Login"
+                        options={{ cardStyleInterpolator: CardStyleInterpolators.forHorizontalIOS, headerShown: false }}
+                        component={Login} />
+                    <Stack.Screen name="TokenRequest"
+                        options={{ cardStyleInterpolator: CardStyleInterpolators.forHorizontalIOS, headerShown: false }}
+                        component={TokenRequest} />
+                    <Stack.Screen name="EmailAuthentication"
+                        options={{ cardStyleInterpolator: CardStyleInterpolators.forHorizontalIOS, headerShown: false }}
+                        component={EmailAuthentication} />
+                    <Stack.Screen name="CreateAccount"
+                        options={{ cardStyleInterpolator: CardStyleInterpolators.forHorizontalIOS, headerShown: false }}
+                        component={CreateAccount} />
+                    <Stack.Screen name="Archive"
                         options={{ cardStyleInterpolator: CardStyleInterpolators.forVerticalIOS, headerShown: false }}
                         component={Archive} />
                     <Stack.Screen name="Room"

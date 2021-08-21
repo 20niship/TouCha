@@ -65,28 +65,32 @@ db.<name>.<command>
 
 ## データ情報
 - User
-  - uuid                      UUID
+  - userUUID                  UUID
   - userID                    ユーザ情報(unique)
   - email                     メールアドレス
   - username                  ユーザーの名前
   - hashedPassWord            パスワードをハッシュ化したやつ
-  - isVerify                  認証されたUserかどうか
-  - room_list                 roomID(room作成時に作られるuniqueな名前)
-  - friends_list              userIDのリスト
+  - roomList                 roomID(room作成時に作られるuniqueな名前)
+  - friendsList              userIDのリスト
 - Room
-  - roomID(hashed)            room
+  - roomUUID                  room
   - roomName                  ルーム名
   - roomIcon                  アイコンのurl
   - status                    ["muted", "active", "blocked"]
-  - userList                  そのルームに所属しているuserIDのリスト
+  - type                      ["direct", "open"]
+  - userList                  そのルームに所属しているuserUUIDのリスト
 - Message
-  - roomID(hashed)            ハッシュ化されたroomID roomIDからの検索に使う
-  - userID(hashed)            ハッシュ化されたuserID userIDからの検索に使う
+  - roomUUID                    ハッシュ化されたroomID roomIDからの検索に使う
+  - userUUID                    ハッシュ化されたuserID userIDからの検索に使う
   - body                      メインのメッセージ
   - reactions                 リアクションのリスト
+  - date
 - Tokens
-  - data
-  - 
+  - email
+  - token
+  - date
+  - isVerify
+  - expired
 
 - Profiels
   - UserID(hashed)

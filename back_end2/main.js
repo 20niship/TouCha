@@ -22,12 +22,38 @@ async function run() {
     await database.connect()
     await database.clearDatabase()
     for (let i of testUsers_json['users']) {
-        await database.addUser(i['name'], i['email'], i['password'])
+        await database.users.insertOne({
+            userUUID: i["userUUID"],
+            userID: null,
+            email: i["email"],
+            username: i["username"],
+            hashedPassWord: await database.hash.make(i["password"]),
+            roomList: i["roomList"],
+            friendList: i["friendList"]
+        })
     }
 
-    var num = await database.createToken('testmail@gmail.com')
-    console.log(await database.isValidToken('testmail@gmail.com', num))
-    await database.userAuthentication("123456879@euh.com", "haoetuoehuh")
+    for (let i of testUsers_json['rooms']) {
+        await database.rooms.insertOne({
+            roomUUID: i["roomUUID"],
+            roomname: i["roomname"],
+            roomIcon: i["roomIcon"],
+            status: i["status"],
+            type: i["type"],
+            userList: i["userList"]
+        })
+    }
+
+    for (let i of testUsers_json['messages']) {
+        await database.messages.insertOne({
+            roomUUID: i["roomUUID"],
+            userUUID: i["userUUID"],
+            body: i["body"],
+            reactions: i["reactions"],
+            date: new Date()
+        })
+    }
+
     // ============================================================================================
 
     // HTTP
@@ -38,29 +64,38 @@ async function run() {
         res.send('Welcome To Toucha Server')
     })
 
-    app.post('/test', async (req, res) => {
-        console.log(req.body)
-        res.send({ send: 'data' })
-    })
-
     // Login 処理
     app.post('/login', async (req, res) => {
-        console.log('login request has accepted')
-        console.log(req.body)
-        console.log(await database.userAuthentication(req.body.email, req.body.password))
-        res.send({ body: 'yayy' })
+        var status = await database.userAuthentication(req.body.email, req.body.password)
+        console.log(status)
+        res.send(status)
     })
 
     app.post('/requestToken', async (req, res) => {
         console.log('Token request has accepted')
-        database.createToken(req.body.email)
+        try {
+            database.createToken(req.body.email)
+            res.send({ status: 'success' })
+        } catch (err) {
+            console.log(err)
+            res.send({ status: 'failure' })
+        }
+    })
+
+    app.post('/emailAuthentication', async (req, res) => {
+        console.log('Email Authentication Request has accepted')
+        res.send(JSON.stringify({ status: await database.verifyToken(req.body.email, req.body.token) }))
     })
 
     app.post('/createAccount', async (req, res) => {
         console.log(req.body)
-        res.send('accepted')
+        var status = await database.createAccount(
+            req.body.username,
+            req.body.email,
+            req.body.password,
+            req.body.token)
+        res.send(status)
     })
-
 
     // Socket.io
     // Attach
@@ -87,7 +122,7 @@ async function run() {
         })
     })
 
-    // Server Deploy
+
     server.listen(PORT, () => {
         console.log('server has deployed on http://localhost:3000')
     })

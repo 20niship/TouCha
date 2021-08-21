@@ -28,7 +28,7 @@ export default class Open_room extends React.Component {
         this.getRoomData();
     }
 
-    getRoomData() { // Socket.io　を使いましょう
+    getRoomData() {
         fetch('http://localhost:3000/api/getRoomList', {
             method: 'POST',
             headers: {

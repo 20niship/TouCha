@@ -1,28 +1,148 @@
 {
     "users": [
         {
+            "userUUID": "F311A080-35DA-4B1F-825B-84C2352C7F67",
+            "email": "a",
+            "userid": "a",
+            "username": "a",
+            "password": "a",
+            "roomList": [],
+            "friendList": []
+        },
+        {
+            "userUUID": "40C141FB-443F-4455-B685-F0B83FA78E54",
             "email": "123456879@euh.com",
             "userid": null,
-            "name": "alice",
-            "password": "haoetuoehuh"
+            "username": "alice",
+            "password": "haoetuoehuh",
+            "roomList": [],
+            "friendList": []
         },
         {
+            "userUUID": "85EFBB57-4D5B-4BA6-90A1-77B8E467AF3B",
             "email": "1273487879@euh.com",
             "userid": "bob382",
-            "name": "bob",
-            "password": "hohenauha"
+            "username": "bob",
+            "password": "hohenauha",
+            "roomList": [],
+            "friendList": []
         },
         {
+            "userUUID": "12523BA5-6551-482E-A9FF-46A5E1F9BE6F",
             "email": "74384972@euh.com",
             "userid": "chrl38",
-            "name": "charlie",
-            "password": "daoeuhhoeu"
+            "username": "charlie",
+            "password": "daoeuhhoeu",
+            "roomList": [],
+            "friendList": []
         },
         {
+            "userUUID": "10C4B9AE-641D-4D38-9AFB-C2E9A0F3347D",
             "email": "1283749@euh.com",
             "userid": "dan384",
-            "name": "daniel",
-            "password": "ahoetuadoeu"
+            "username": "daniel",
+            "password": "ahoetuadoeu",
+            "roomList": [],
+            "friendList": []
+        },
+        {
+            "userUUID": "A6DB75BE-93A5-493A-AE68-13997BDBF4DF",
+            "email": "kaitakase@gmail.com",
+            "userid": "kaitakase",
+            "username": "kaitakase",
+            "password": "aohetuaonhe",
+            "roomList": [],
+            "friendList": []
+        }
+    ],
+    "rooms": [
+        {
+            "roomUUID": "72A6DB86-CF7B-4A16-85D2-7A4077CF1206",
+            "roomname": "room1",
+            "roomIcon": null,
+            "status": "active",
+            "type": "open",
+            "userList": []
+        },
+        {
+            "roomUUID": "8F8ECBF2-573D-4AA5-891C-7412CBE5A1B8",
+            "roomname": "room2",
+            "roomIcon": null,
+            "status": "active",
+            "type": "open",
+            "userList": []
+        },
+        {
+            "roomUUID": "3FC88A52-DA6B-46C8-B8B3-C2A10DAA12CD",
+            "roomname": "room3",
+            "roomIcon": null,
+            "status": "active",
+            "type": "open",
+            "userList": []
+        },
+        {
+            "roomUUID": "34A8AC29-955F-4C52-A0EF-BB3F973F9AA5",
+            "roomname": "room4",
+            "roomIcon": null,
+            "status": "active",
+            "type": "open",
+            "userList": []
+        },
+        {
+            "roomUUID": "EE477BDC-022B-4622-A87E-C9D100A56405",
+            "roomname": "room5",
+            "roomIcon": null,
+            "status": "active",
+            "type": "open",
+            "userList": []
+        },
+        {
+            "roomUUID": "93CB7DA0-1351-40FC-8ACE-C0A55C65A407",
+            "roomname": "room6",
+            "roomIcon": null,
+            "status": "active",
+            "type": "open",
+            "userList": []
+        },
+        {
+            "roomUUID": "116E094D-E915-4BB2-B1E0-690C213CAABC",
+            "roomname": "room7",
+            "roomIcon": null,
+            "status": "active",
+            "type": "open",
+            "userList": []
+        },
+        {
+            "roomUUID": "B8ECD94B-6054-4034-9662-BA585B665D1E",
+            "roomname": "room8",
+            "roomIcon": null,
+            "status": "active",
+            "type": "open",
+            "userList": []
+        },
+        {
+            "roomUUID": "15A77A20-95F2-483C-92FB-CE0405E14D63",
+            "roomname": "room9",
+            "roomIcon": null,
+            "status": "active",
+            "type": "open",
+            "userList": []
+        },
+        {
+            "roomUUID": "A2B6B8DC-9CF4-4437-B63A-4F766781689A",
+            "roomname": "room10",
+            "roomIcon": null,
+            "status": "active",
+            "type": "open",
+            "userList": []
+        }
+    ],
+    "messages": [
+        {
+            "roomUUID": "A2B6B8DC-9CF4-4437-B63A-4F766781689A",
+            "userUUID": "40C141FB-443F-4455-B685-F0B83FA78E54",
+            "body": "Toucha Test",
+            "reactions": []
         }
     ]
 }

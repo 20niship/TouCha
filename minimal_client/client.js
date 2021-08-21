@@ -8,7 +8,7 @@ class Client {
     }
 
     // サーバーへPOSTする関数
-    async _requestToServer(path, msg, callback) {
+    async _postRequest(path, msg, callback) { // React-native ではfetchを使うべきらしい
         let postData = msg
         let postDataStr = JSON.stringify(postData)
         let req = http.request({
@@ -37,18 +37,18 @@ class Client {
 
     // メールアドレスと、パスワードを送信することによって、アクセストークンを取得
     async login(email, password) {
-        await this._requestToServer('/login', { email: email, password: password }, (msg) => { console.log(msg) })
+        await this._postRequest('/login', { email: email, password: password }, (msg) => { console.log(msg) })
     }
 
     // emailに紐付いたtokenを作成、email宛にtokenを送信
     async requestToken(email) {
-        this._requestToServer('/requestToken', { email: email })
+        this._postRequest('/requestToken', { email: email })
     }
 
     // Test関数
     async test() {
-        await this.login('1273487879@euh.com', 'hohenauha')
-        // await requestToken('touchatest1432@gmail.com')
+        // await this.login('1273487879@euh.com', 'hohenauha')
+        await this.requestToken('touchatest1432@gmail.com')
     }
 }
 

@@ -91,7 +91,7 @@ export default class CreateRoom extends React.Component {
                     <TouchableHighlight onPress={__createNewRoom} activeOpacity={0.2}>
                         <View style={styles.acceptButton}><Text>Create Room</Text></View>
                     </TouchableHighlight>
-                    <TouchableHighlight onPress={() => navigation.navigate("OpenRoom")} activeOpacity={0.2}>
+                    <TouchableHighlight onPress={() => navigation.navigate("Archive")} activeOpacity={0.2}>
                         <View style={styles.cancelButton}><Text>  Cancel  </Text></View>
                     </TouchableHighlight>
                 </View>

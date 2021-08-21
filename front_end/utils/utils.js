@@ -56,7 +56,7 @@ export class NavigationFooter extends React.Component {
         // <Tab.Navigator
         //     screenOptions={({route}) => ({tabBarIcon:({color,size}) => {
         //       size=25
-        //       if (route.name === 'OpenRoom') {
+        //       if (route.name === 'Archive') {
         //         var iconName="university"
         //       } else if (route.name === 'Room') {
         //         iconName = "comment"
@@ -71,7 +71,7 @@ export class NavigationFooter extends React.Component {
         //     },
         //   })}
         //   >
-        //     <Tab.Screen name="OpenRoom" component={Archive} activeColor="#e91e63"/>
+        //     <Tab.Screen name="Archive" component={Archive} activeColor="#e91e63"/>
         //     <Tab.Screen name="Room" component={Room} activeColor="#e91e63" options={{ tabBarBadge: 3 }}/>
         //     <Tab.Screen name="Profile" component={Profile} activeColor="#e91e63" />
         //     <Tab.Screen name="Setting" component={Setting} activeColor="#e91e63" />
@@ -81,7 +81,7 @@ export class NavigationFooter extends React.Component {
         return (
             <View style={{ backgroundColor: "#f00" }}>
                 <View style={{ flexDirection: 'row', justifyContent: 'center' }}>
-                    <TouchableOpacity onPress={() => { this.props.nav("OpenRoom") }} activeOpacity={0.2}>
+                    <TouchableOpacity onPress={() => { this.props.nav("Archive") }} activeOpacity={0.2}>
                         <View style={ButtonStyle}><Text>Open Room</Text></View>
                     </TouchableOpacity>
 

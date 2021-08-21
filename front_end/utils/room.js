@@ -196,7 +196,7 @@ export default class ChatView extends Component {
         this.state.hSock.socket.emit('leave-room', JSON.stringify({ 'event': 'leave-room', 'room': this.state.roomID, 'user': '000' }));
 
         const { navigation } = this.props;
-        navigation.navigate("OpenRoom");
+        navigation.navigate("Archive");
     }
 
     render() {
