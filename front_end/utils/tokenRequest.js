@@ -23,9 +23,31 @@ export default class TokenRequest extends React.Component {
             console.log('email is null')
             Alert.alert('email を入力してください')
         } else {
-            await client.post('/requestToken', { email: this.email }) // TODO ここをthis.emailに
-            SecureStore.setItemAsync('email', this.email)
-            navigation.navigate('EmailAuthentication')
+            var res = await client.post('/requestToken', { email: this.email, anyway: false })
+            var res = await res.json()
+            console.log(res)
+            if (res.status == 'emailRegistered') {
+                Alert.alert('そのEmailはすでに登録されています。',
+                    '既存のアカウントを削除して新しくアカウントを作成しますか？',
+                    [{
+                        text: "はい",
+                        onPress: () => {
+                            client.post('/requestToken', { email: this.email, anyway: true })
+                            navigation.navigate('EmailAuthentication')
+                        },
+                    },
+                    {
+                        text: "いいえ",
+                        onPress: () => {
+                            navigation.navigate('Login')
+                        },
+                        style: "cancel"
+                    }
+                    ], { cancelable: true })
+            } else {
+                SecureStore.setItemAsync('email', this.email)
+                navigation.navigate('EmailAuthentication')
+            }
         }
     }
 

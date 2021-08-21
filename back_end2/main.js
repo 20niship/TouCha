@@ -73,13 +73,8 @@ async function run() {
 
     app.post('/requestToken', async (req, res) => {
         console.log('Token request has accepted')
-        try {
-            database.createToken(req.body.email)
-            res.send({ status: 'success' })
-        } catch (err) {
-            console.log(err)
-            res.send({ status: 'failure' })
-        }
+        var result = await database.createToken(req.body.email, req.body.anyway)
+        res.send(result)
     })
 
     app.post('/emailAuthentication', async (req, res) => {
@@ -95,6 +90,12 @@ async function run() {
             req.body.password,
             req.body.token)
         res.send(status)
+    })
+
+    app.post('/checkAccessCode', async (req, res) => {
+        console.log('AccessCode')
+        console.log(req.body.accessCode)
+        res.send(await database.checkAccessCode(req.body.accessCode))
     })
 
     // Socket.io

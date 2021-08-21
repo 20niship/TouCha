@@ -86,11 +86,16 @@ class DataBase {
     }
 
     // メールに紐ついたTokenを発行し、mail宛にメールを送る tokenを返す
-    async createToken(email) {
+    async createToken(email, anyway) {
         var date = new Date()
         var token = Math.floor(100000 + Math.random() * 900000)
         var mailer = new Mailer()
+        var result
         try {
+            if (!anyway && (await this.users.findOne({ email: email }))) {
+                result = { status: 'emailRegistered' }
+                throw 'The Email has Already Registered'
+            }
             await this.tokens.insertOne({
                 date: date,
                 email: email,
@@ -98,8 +103,10 @@ class DataBase {
                 expired: true, // 有効か無効か判定
                 verified: false
             })
+            result = { status: 'success' }
+            mailer.send(email, 'Token Request', token.toString()) // 送るメッセージの件名を考えること。 TODO
         } catch (err) { console.log(err) }
-        mailer.send(email, 'Token Request', token.toString()) // 送るメッセージの件名を考えること。 TODO
+        return result
     }
 
     // tokenをVerifyする
@@ -144,22 +151,21 @@ class DataBase {
             } else if (match['isValid'] && match['expired']) {
                 result = { status: "invalid" }
                 throw "Token has Invalid or Expired"
-            } else if (await this.users.findOne({ email: email })) {
-                result = { status: "emailRegistered" }
-                throw "This username has been Taken"
             } else if (await this.users.findOne({ username: username })) {
                 result = { status: "usernameTaken" }
                 throw "This username has been Taken"
             } else {
-                await this.users.insertOne({
-                    userUUID: uuidv4(),
-                    userID: null,
-                    email: email,
-                    username: username,
-                    hashedPassWord: await this.hash.make(password),
-                    room_list: [],
-                    friend_list: []
-                })
+                var updateUser = {
+                    $set: {
+                        userUUID: uuidv4(),
+                        userID: null,
+                        username: username,
+                        hashedPassWord: await this.hash.make(password),
+                        room_list: [],
+                        friend_list: []
+                    },
+                }
+                await this.users.updateOne({ email: email }, updateUser, { upsert: true })
                 var expireToken = {
                     $set: {
                         expired: false
@@ -203,6 +209,26 @@ class DataBase {
             }
         } catch (err) {
             console.log(err)
+        }
+        return result
+    }
+
+    async checkAccessCode(code) {
+        console.log('checkAccessCode')
+        var accessCode = await this.accessCode.findOne({ accessCode: code })
+        var result = null
+        if (!accessCode) {
+            result = { status: 'noMatch' }
+            console.log('noMatch')
+        } else if (accessCode.expired) {
+            result = { status: 'expired' }
+            console.log('expired')
+        } else if ((accessCode.date - new Date()) > 60 * 60 * 1000) {
+            result = { status: 'outdated' }
+            console.log('outdated')
+        } else {
+            result = { status: 'ok' }
+            console.log('OK')
         }
         return result
     }
