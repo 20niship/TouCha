@@ -6,12 +6,6 @@ SERVER
 
 TESTはDeveloper のユーザーを作成するか、またはアクセス制限をしたユーザーを使う（オープンソースのため）
 
-- User Data
-  - id
-  - name
-  - hashed_password
-  - isVerify
-  - iconURL
 
 
 ## やること
@@ -71,20 +65,31 @@ db.<name>.<command>
   - username                  ユーザーの名前
   - hashedPassWord            パスワードをハッシュ化したやつ
   - roomList                 roomID(room作成時に作られるuniqueな名前)
+    - {id: 'str', status: {"muted/active/blocked/inviting"}}
   - friendsList              userIDのリスト
+  - profiles
+    - age
+    - birthday
+    - grade
+    - links
+    - iconURL
+    - message
 - Room
   - roomUUID                  room
   - roomName                  ルーム名
+  - discription               概要
   - roomIcon                  アイコンのurl
-  - status                    ["muted", "active", "blocked"]
-  - type                      ["direct", "open"]
-  - userList                  そのルームに所属しているuserUUIDのリスト
+  - type                      ["open", "direct", "restricted"]
+  - userList                  null / そのルームに所属しているuserUUIDのリスト
+  - tags
 - Message
-  - roomUUID                    ハッシュ化されたroomID roomIDからの検索に使う
-  - userUUID                    ハッシュ化されたuserID userIDからの検索に使う
+  - roomUUID                  ハッシュ化されたroomID roomIDからの検索に使う   :: index
+  - userUUID                  ハッシュ化されたuserID userIDからの検索に使う [ null, 'user_id' ]
+  - messageType               ['text', 'file', 'media']
   - body                      メインのメッセージ
   - reactions                 リアクションのリスト
-  - date
+  - route                     null / message_id
+  - date                                                                      :: index
 - Tokens
   - email
   - token
@@ -92,8 +97,33 @@ db.<name>.<command>
   - isVerify
   - expired
 
-- Profiels
-  - UserID(hashed)
+## room
+- frend登録の仕方？
+  - 同じroomに所属する人にrequest
+  - userid / profile をもとに検索してrequest
+    - 検索項目絞り込みができる
+  - UI
+    - 制限ルームのメンバーリスト
+    -
+
+- roomに招待?
+  - openRoom
+    - Room名から検索できる
+  - restrictedRoom
+    - Room内にいるユーザーから、招待をできる
+
+
+### どうやって、招待通知をするか
+- Archive につける？
+## profile
+
+
+## Memo
+- UUIDと_idを区別するかは保留　検索能力等による
+
+
+
+
 
 
 

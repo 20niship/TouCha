@@ -33,21 +33,12 @@ export default class ChatView extends Component {
         // Room画面に遷移したときに実行される
         props.navigation.addListener('focus', () => { this.init(); });
 
-        //Room画面を離れたときに実行される
-        // props.navigation.addListener('beforeRemove', () => { this.backtoArchive(); });
-
         console.log("exit constructor() function");
     }
 
     componentWillUnmount() {
         this.backtoArchive();
     }
-
-
-    // ↓これがなんのためにあるのかよくわかっていない。削除予定
-    // static navigationOptions = {
-    // title: 'Chat',
-    // };
 
 
     init() {
@@ -110,13 +101,6 @@ export default class ChatView extends Component {
                 console.log(error);
                 console.log("[ ERROR ] ERROR server connection noe valid? ネットにつながってないかも")
             });
-
-        // axios
-        //   .post('http://localhost:3000/api/getLast50msg', qs.stringify(send_msg_to_get_latest50msg))
-        //   .then((res) => {
-        //     console.log(res);
-        //   }).catch(error => console.log(error));
-
 
         // TODO最終的には以下のように実装する予定
         // this.state.roomName = getRoomName(this.props.navigation.navigate.state.roomid);

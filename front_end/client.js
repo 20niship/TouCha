@@ -1,4 +1,3 @@
-
 export default class Client {
     constructor() {
         this.url = 'http://192.168.3.2:3000'
@@ -14,4 +13,3 @@ export default class Client {
         })
     }
 }
-

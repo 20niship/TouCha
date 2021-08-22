@@ -1,11 +1,15 @@
 import 'react-native-gesture-handler';
 import * as React from 'react';
 import Icon from 'react-native-vector-icons/FontAwesome';
+import Client from '../client'
 import socketHandler from '../proc/socket'
 import { NavigationFooter } from './utils'
+import io from 'socket.io-client';
 import {
     Text, View, StyleSheet, TouchableOpacity, ScrollView
 } from 'react-native';
+
+const client = new Client()
 
 export default class Open_room extends React.Component {
     constructor(props) {
@@ -13,19 +17,7 @@ export default class Open_room extends React.Component {
         this.hSock = new socketHandler();
         this.hSock.createNew();
         this.state = {};
-        this.room_data = [
-            { name: "room1", icon_name: "user-circle", lastmsg: "Hello room 1", status: "ok", id: "rid1" },
-            { name: "room2", icon_name: "user-circle", lastmsg: "Hello room 2", status: "ok", id: "rid2" },
-            { name: "room3", icon_name: "user-circle", lastmsg: "Hello room 3", status: "ok", id: "rid3" },
-            { name: "room4", icon_name: "user-circle", lastmsg: "Hello room 4", status: "ok", id: "rid4" },
-            { name: "room5", icon_name: "user-circle", lastmsg: "Hello room 5", status: "ok", id: "rid5" },
-            { name: "room6", icon_name: "user-circle", lastmsg: "Hello room 5", status: "ok", id: "rid6" },
-            { name: "room7", icon_name: "user-circle", lastmsg: "Hello room 5", status: "ok", id: "rid7" },
-            { name: "room8", icon_name: "user-circle", lastmsg: "Hello room 5", status: "ok", id: "rid8" },
-            { name: "room9", icon_name: "user-circle", lastmsg: "Hello room 5", status: "ok", id: "rid9" },
-            { name: "room10", icon_name: "user-circle", lastmsg: "Hello room 5", status: "ok", id: "rid10" },
-        ];
-        this.getRoomData();
+        this.room_data = [];
     }
 
     getRoomData() {

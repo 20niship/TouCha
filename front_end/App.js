@@ -3,6 +3,7 @@ import * as Notifications from 'expo-notifications';
 import * as React from 'react';
 import * as SecureStore from 'expo-secure-store'
 import { View, Text } from 'react-native'
+
 import AppLoading from 'expo-app-loading';
 // import Loading from './utils/loading'
 import Archive from './utils/archive';
@@ -16,6 +17,7 @@ import CreateAccount from "./utils/createAccount"
 import TokenRequest from "./utils/tokenRequest.js"
 import EmailAuthentication from "./utils/emailAuthentication.js"
 import StartUp from './utils/startUp'
+
 import Client from './client'
 import {
     NavigationContainer
@@ -52,9 +54,6 @@ export default function App() {
     React.useEffect(() => { // Push通知の許可
         requestPermissionsAsync();
     })
-
-    // AccessCodeが存在する場合
-
 
     if (!isLoaded) {
         return (<View>

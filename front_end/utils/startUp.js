@@ -24,6 +24,8 @@ export default class startUp extends React.Component {
     }
 
     async startUp() {
+        // await SecureStore.setItemAsync('accessCode', 'aaaaaa')// TODO Debug Mode
+        // await SecureStore.setItemAsync('email', 'aaaaaa')// TODO Debug Mode
         var accessCode = await SecureStore.getItemAsync('accessCode')
         var res = await client.post('/checkAccessCode', { accessCode: accessCode })
         var res = await res.json()
@@ -55,7 +57,7 @@ export default class startUp extends React.Component {
                     onError={() => { }}
                 />
                 <Text style={styles.text}>
-                    Toucha Loading
+                    Toucha Loading ...
                 </Text>
             </View>
         );

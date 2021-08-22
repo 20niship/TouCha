@@ -54,6 +54,13 @@ async function run() {
         })
     }
 
+    // database.accessCode.insertOne({
+    //     accessCode: 'aaaaaa',
+    //     email: 'aaaaaa',
+    //     date: new Date(),
+    //     expired: false
+    // })
+
     // ============================================================================================
 
     // HTTP
@@ -111,18 +118,17 @@ async function run() {
         })
     })
 
-    io.of('socketTest').on('connect', (socket) => {
+    io.of('room').on('connect', (socket) => {
         console.log('Soket has connected to socketTest')
-
-        socket.on('disconnect', () => {
-            console.log('Socket has Disconnected from socketTest')
-        })
 
         socket.on('test', (msg) => {
             console.log(msg)
         })
-    })
 
+        socket.on('disconnect', () => {
+            console.log('Socket has Disconnected from socketTest')
+        })
+    })
 
     server.listen(PORT, () => {
         console.log('server has deployed on http://localhost:3000')
@@ -130,4 +136,3 @@ async function run() {
 }
 
 run()
-
